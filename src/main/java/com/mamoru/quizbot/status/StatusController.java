@@ -8,6 +8,6 @@ public class StatusController {
 
     @GetMapping("/status")
     public Status status(){
-        return new Status("ok");
+        return new Status("ok heroku");
     }
 }
