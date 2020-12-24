@@ -15,3 +15,5 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "enigmatic-ridge-83640" #Must be unique in Heroku
           heroku_email: "aberkunsky@gmail.com"
+        env:
+          BOT_TOKEN:${{secrets.BOT_TOKEN}} 
