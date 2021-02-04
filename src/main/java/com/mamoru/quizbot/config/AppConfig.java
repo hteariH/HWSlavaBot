@@ -7,6 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 @Configuration
 public class AppConfig {
 
@@ -29,6 +33,22 @@ public class AppConfig {
         telegramBot.setBotToken(System.getenv(botConfig.getBotToken()));
         telegramBot.setBotPath(botConfig.getWebHookPath());
 
+        registerInTgApi(telegramBot.getBotToken(), telegramBot.getBotPath());
+
         return telegramBot;
+    }
+
+    private void registerInTgApi(String botToken, String botPath) {
+        URL url = null;
+        try {
+            url = new URL("https://api.telegram.org/bot" + botToken + "/setWebhook?url=" + botPath);
+            System.out.println("url="+url.toString());
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            System.out.println("responsecode=" + responseCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
