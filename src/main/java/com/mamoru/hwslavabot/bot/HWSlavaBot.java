@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 @Getter
@@ -70,9 +71,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> manageHomeState(Update update) {
         String text = update.getMessage().getText();
-        if (update.getMessage().getFrom().getUserName().equals("KOCMOC_HAW") && update.getMessage().getText().equalsIgnoreCase("Слава Украине")) {
+        if (update.getMessage().getText().toLowerCase(Locale.ROOT).contains("слава украине")) {
             return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
-//            execute(sendMessage);
+//            try {
+//                execute(sendMessage);
+//            } catch (TelegramApiException e) {
+//                e.printStackTrace();
+//            }
 //            return new PromoteChatMember(update.getMessage().getChatId(),update.getMessage().getFrom().getId());
         }
         if (update.getMessage().getFrom().getUserName().equals("BraveMamoru") && update.getMessage().getText().equals("Слава Украине!!!1")) {
