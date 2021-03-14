@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.PromoteChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,9 +72,18 @@ public class HWSlavaBot extends TelegramWebhookBot {
         String text = update.getMessage().getText();
         if (update.getMessage().getFrom().getUserName().equals("KOCMOC_HAW") && update.getMessage().getText().equalsIgnoreCase("Слава Украине")) {
             return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
+//            execute(sendMessage);
+//            return new PromoteChatMember(update.getMessage().getChatId(),update.getMessage().getFrom().getId());
         }
         if (update.getMessage().getFrom().getUserName().equals("BraveMamoru") && update.getMessage().getText().equals("Слава Украине!!!1")) {
+            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!1");
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
             return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
+
         }
         return null;
 //        switch (text) {
