@@ -1,4 +1,4 @@
-package com.mamoru.quizbot.config;
+package com.mamoru.hwslavabot.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "telegrambot")
-public class QuizTelegramBotConfig {
+public class HWSlavaTelegramBotConfig {
     String webHookPath;
     String userName;
     String botToken;

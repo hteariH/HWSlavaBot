@@ -1,4 +1,4 @@
-package com.mamoru.quizbot.menu;
+package com.mamoru.hwslavabot.menu;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ShowFutureGamesService {
+public class MainMenuService {
 
-    public SendMessage getFutureGamesMenuMessage(Long chatId, String textMessage) {
-        final ReplyKeyboardMarkup replyKeyboardMarkup = getFutureGamesKeyboard();
+    public SendMessage getMainMenuMessage(final long chatId, final String textMessage) {
+        final ReplyKeyboardMarkup replyKeyboardMarkup = getMainMenuKeyboard();
         final SendMessage mainMenuMessage =
                 createMessageWithKeyboard(chatId, textMessage, replyKeyboardMarkup);
 
         return mainMenuMessage;
     }
 
-    private ReplyKeyboardMarkup getFutureGamesKeyboard() {
+    private ReplyKeyboardMarkup getMainMenuKeyboard() {
 
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
@@ -33,9 +33,10 @@ public class ShowFutureGamesService {
         KeyboardRow row2 = new KeyboardRow();
         KeyboardRow row3 = new KeyboardRow();
         KeyboardRow row4 = new KeyboardRow();
-        row1.add(new KeyboardButton("07.02.2020 (ВС) - Общие игры"));
-        row2.add(new KeyboardButton("12.02.2020 (ПТ) - Тренировка фва"));
-        row4.add(new KeyboardButton("На главную"));
+        row1.add(new KeyboardButton("Записаться на занятия"));
+        row2.add(new KeyboardButton("О нас"));
+        row3.add(new KeyboardButton("Купить ролики"));
+        row4.add(new KeyboardButton("Оставить отзыв"));
         keyboard.add(row1);
         keyboard.add(row2);
         keyboard.add(row3);
@@ -56,6 +57,4 @@ public class ShowFutureGamesService {
         }
         return sendMessage;
     }
-
-
 }

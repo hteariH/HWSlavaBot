@@ -1,4 +1,4 @@
-package com.mamoru.quizbot.status;
+package com.mamoru.hwslavabot.status;
 
 public class Status {
 

@@ -1,4 +1,4 @@
-package com.mamoru.quizbot.status;
+package com.mamoru.hwslavabot.status;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,7 +1,8 @@
-package com.mamoru.quizbot.config;
+package com.mamoru.hwslavabot.config;
 
-import com.mamoru.quizbot.bot.QuizTelegramBot;
-import com.mamoru.quizbot.bot.TelegramFacade;
+import com.mamoru.hwslavabot.bot.HWSlavaBot;
+import com.mamoru.hwslavabot.state.State;
+import com.mamoru.hwslavabot.state.StateTracker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -10,23 +11,25 @@ import org.telegram.telegrambots.meta.ApiContext;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 @Configuration
 public class AppConfig {
 
 
-    private final QuizTelegramBotConfig botConfig;
 
-    public AppConfig(QuizTelegramBotConfig botConfig) {
+    private final HWSlavaTelegramBotConfig botConfig;
+
+    public AppConfig(HWSlavaTelegramBotConfig botConfig) {
         this.botConfig = botConfig;
     }
 
     @Bean
-    public QuizTelegramBot QuizTelegramBot(TelegramFacade telegramFacade) {
+    public HWSlavaBot QuizTelegramBot(StateTracker stateTracker) {
         DefaultBotOptions options = ApiContext
                 .getInstance(DefaultBotOptions.class);
 
-        QuizTelegramBot telegramBot = new QuizTelegramBot(options, telegramFacade);
+        HWSlavaBot telegramBot = new HWSlavaBot(options,stateTracker);
         telegramBot.setBotUsername(botConfig.getUserName());
         System.out.println(botConfig.getBotToken());
         System.out.println(System.getenv(botConfig.getBotToken()));
@@ -36,6 +39,11 @@ public class AppConfig {
         registerInTgApi(telegramBot.getBotToken(), telegramBot.getBotPath());
 
         return telegramBot;
+    }
+
+    @Bean
+    public List<String> states(){
+        return State.getList();
     }
 
     private void registerInTgApi(String botToken, String botPath) {

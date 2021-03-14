@@ -1,4 +1,4 @@
-package com.mamoru.quizbot.menu;
+package com.mamoru.hwslavabot.menu;
 
 import org.springframework.stereotype.Component;
 

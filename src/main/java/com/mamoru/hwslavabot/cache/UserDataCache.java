@@ -1,4 +1,4 @@
-package com.mamoru.quizbot.cache;
+package com.mamoru.hwslavabot.cache;
 
 import org.springframework.stereotype.Service;
 

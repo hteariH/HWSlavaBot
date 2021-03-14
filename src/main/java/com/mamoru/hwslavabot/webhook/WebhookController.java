@@ -1,5 +1,6 @@
-package com.mamoru.quizbot.bot;
+package com.mamoru.hwslavabot.webhook;
 
+import com.mamoru.hwslavabot.bot.HWSlavaBot;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,9 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RestController
 public class WebhookController {
 
-    private final QuizTelegramBot telegramBot;
+    private final HWSlavaBot telegramBot;
 
-    public WebhookController(QuizTelegramBot telegramBot) {
+    public WebhookController(HWSlavaBot telegramBot) {
         this.telegramBot = telegramBot;
     }
 
