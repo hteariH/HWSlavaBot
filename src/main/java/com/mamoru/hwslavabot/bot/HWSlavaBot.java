@@ -22,6 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -74,19 +75,23 @@ public class HWSlavaBot extends TelegramWebhookBot {
     }
 
     private BotApiMethod<?> onCommandAddSlava(Update update) {
-        String s = update.getMessage().getText().split(" ")[1];
+        String[] s = update.getMessage().getText().split(" ");
+        List<String> list = new ArrayList<>(List.of(s));
+        list.remove(0);
+        String res= list.stream().map(str -> str + " ").collect(Collectors.joining());
+        res = res.trim();
         System.out.println(update.getMessage().getText());
-        System.out.println(s);
-        Optional<Slava> byId = slavaRepository.findById(s);
+        System.out.println(res);
+        Optional<Slava> byId = slavaRepository.findById(res);
         if(byId.isPresent()) {
             Slava slava = byId.get();
-            return new SendMessage(update.getMessage().getChatId(),s + " already present");
+            return new SendMessage(update.getMessage().getChatId(),res + " already present");
         } else {
             Slava slava = new Slava();
-            slava.setId(s);
+            slava.setId(res);
             slavaRepository.save(slava);
         }
-        return new SendMessage(update.getMessage().getChatId(),s + " added");
+        return new SendMessage(update.getMessage().getChatId(),res + " added");
     }
 
     private BotApiMethod<?> manageHomeState(Update update) {
