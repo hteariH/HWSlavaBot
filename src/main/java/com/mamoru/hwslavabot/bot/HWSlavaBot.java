@@ -55,7 +55,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             if (incomingText.startsWith(Command.addSlava)) {
 
                 return onCommandAddSlava(update);
-            }//
+            } else {//
 //            } else if (incomingText.startsWith(Command.HELP)) {
 //
 //                return onCommandHelp(update);
@@ -66,7 +66,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
                 return manageHomeState(update);
 
-//            }
+            }
 
 //        return replyMessage;
         }
@@ -78,18 +78,19 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Optional<Slava> byId = slavaRepository.findById(s);
         if(byId.isPresent()) {
             Slava slava = byId.get();
+            return new SendMessage(update.getMessage().getChatId(),s + " already present");
         } else {
             Slava slava = new Slava();
             slava.setId(s);
         }
-        return new SendMessage(String.valueOf(update.getMessage().getChatId()),s + " added");
+        return new SendMessage(update.getMessage().getChatId(),s + " added");
     }
 
     private BotApiMethod<?> manageHomeState(Update update) {
         String text = update.getMessage().getText();
         if (update.getMessage().getText().toLowerCase(Locale.ROOT).contains("слава украине")) {
             SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(update.getMessage().getChatId().toString());
+            sendMessage.setChatId(update.getMessage().getChatId());
 //            sendMessage.setText(getRandomWord() + " Слава!");
             sendMessage.setText(getRandomWordBD() + " Слава!");
 //            new SetChatAdministratorCustomTitle()
