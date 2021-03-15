@@ -50,7 +50,7 @@ public class MainMenuService {
                                                   final ReplyKeyboardMarkup replyKeyboardMarkup) {
         final SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(chatId);
+//        sendMessage.setChatId(chatId);
         sendMessage.setText(textMessage);
         if (replyKeyboardMarkup != null) {
             sendMessage.setReplyMarkup(replyKeyboardMarkup);

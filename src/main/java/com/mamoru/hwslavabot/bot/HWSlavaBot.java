@@ -1,15 +1,18 @@
 package com.mamoru.hwslavabot.bot;
 
+import com.mamoru.hwslavabot.commons.Command;
+import com.mamoru.hwslavabot.commons.Slava;
+import com.mamoru.hwslavabot.commons.SlavaRepository;
 import com.mamoru.hwslavabot.state.State;
 import com.mamoru.hwslavabot.state.StateTracker;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.PromoteChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -18,10 +21,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 
 @Getter
 @Setter
@@ -32,6 +32,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private String botToken;
 
     private StateTracker stateTracker;
+
+    @Autowired
+    private SlavaRepository slavaRepository;
 
     public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
         super(options);
@@ -48,10 +51,10 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
             /* manage commands */
 
-//            if (incomingText.startsWith(Command.START)) {
-//
-//                return onCommandStart(update);
-//
+            if (incomingText.startsWith(Command.addSlava)) {
+
+                return onCommandAddSlava(update);
+            }//
 //            } else if (incomingText.startsWith(Command.HELP)) {
 //
 //                return onCommandHelp(update);
@@ -69,10 +72,28 @@ public class HWSlavaBot extends TelegramWebhookBot {
         return null;
     }
 
+    private BotApiMethod<?> onCommandAddSlava(Update update) {
+        String s = update.getMessage().getText().split(" ")[1];
+        Optional<Slava> byId = slavaRepository.findById(s);
+        if(byId.isPresent()) {
+            Slava slava = byId.get();
+        } else {
+            Slava slava = new Slava();
+            slava.setId(s);
+        }
+        return new SendMessage(String.valueOf(update.getMessage().getChatId()),s + " added");
+    }
+
     private BotApiMethod<?> manageHomeState(Update update) {
         String text = update.getMessage().getText();
         if (update.getMessage().getText().toLowerCase(Locale.ROOT).contains("слава украине")) {
-            return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(update.getMessage().getChatId().toString());
+//            sendMessage.setText(getRandomWord() + " Слава!");
+            sendMessage.setText(getRandomWordBD() + " Слава!");
+//            new SetChatAdministratorCustomTitle()
+            return sendMessage;
+//            return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
 //            try {
 //                execute(sendMessage);
 //            } catch (TelegramApiException e) {
@@ -81,13 +102,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //            return new PromoteChatMember(update.getMessage().getChatId(),update.getMessage().getFrom().getId());
         }
         if (update.getMessage().getFrom().getUserName().equals("BraveMamoru") && update.getMessage().getText().equals("Слава Украине!!!1")) {
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!1");
+            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), getRandomWord() + " Слава!1");
             try {
                 execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-            return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
+            return new SendMessage(update.getMessage().getChatId().toString(), getRandomWord() + " Слава!");
 
         }
         return null;
@@ -97,6 +118,15 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //            default:
 //                return new SendMessage(update.getMessage().getChatId(), update.getMessage().getText());
 //        }
+    }
+
+    private String getRandomWordBD() {
+        Random rnd = new Random();
+        Iterable<Slava> all = slavaRepository.findAll();
+        List<String> result = new ArrayList<>();
+        all.forEach(slava -> result.add(slava.getId()));
+        int i = rnd.nextInt(result.size() - 1);
+        return result.get(i);
     }
 
     private String getRandomWord() {
@@ -160,7 +190,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                                                   final ReplyKeyboardMarkup replyKeyboardMarkup) {
         final SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(chatId);
+        sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(textMessage);
         if (replyKeyboardMarkup != null) {
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
