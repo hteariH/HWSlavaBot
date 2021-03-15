@@ -130,8 +130,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Iterable<Slava> all = slavaRepository.findAll();
         List<String> result = new ArrayList<>();
         all.forEach(slava -> result.add(slava.getId()));
+        System.out.println(result.size());
         int i = rnd.nextInt(result.size());
-        return result.get(i-1);
+        return result.get(i);
     }
 
     private String getRandomWord() {
