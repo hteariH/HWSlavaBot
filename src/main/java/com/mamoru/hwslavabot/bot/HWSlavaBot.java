@@ -84,6 +84,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         } else {
             Slava slava = new Slava();
             slava.setId(s);
+            slavaRepository.save(slava);
         }
         return new SendMessage(update.getMessage().getChatId(),s + " added");
     }
