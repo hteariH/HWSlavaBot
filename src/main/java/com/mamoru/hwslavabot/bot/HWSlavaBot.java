@@ -106,16 +106,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //            }
 //            return new PromoteChatMember(update.getMessage().getChatId(),update.getMessage().getFrom().getId());
         }
-        if (update.getMessage().getFrom().getUserName().equals("BraveMamoru") && update.getMessage().getText().equals("Слава Украине!!!1")) {
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId().toString(), getRandomWord() + " Слава!1");
-            try {
-                execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-            return new SendMessage(update.getMessage().getChatId().toString(), getRandomWord() + " Слава!");
-
-        }
         return null;
 //        switch (text) {
 //            case "Записаться на занятия":
