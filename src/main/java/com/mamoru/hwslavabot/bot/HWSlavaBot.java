@@ -36,6 +36,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     @Autowired
     private SlavaRepository slavaRepository;
 
+
     public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
         super(options);
         this.stateTracker = stateTracker;
