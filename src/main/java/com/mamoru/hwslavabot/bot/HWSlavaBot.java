@@ -75,6 +75,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> onCommandAddSlava(Update update) {
         String s = update.getMessage().getText().split(" ")[1];
+        System.out.println(update.getMessage().getText());
+        System.out.println(s);
         Optional<Slava> byId = slavaRepository.findById(s);
         if(byId.isPresent()) {
             Slava slava = byId.get();
