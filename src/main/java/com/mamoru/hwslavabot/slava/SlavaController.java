@@ -21,7 +21,8 @@ public class SlavaController {
 
     @GetMapping("/slava/{id}")
     public Slava getSlava(@PathVariable("id") String id){
-        return slavaRepository.getOne(id);
+
+        return slavaRepository.findById(id).orElse(null);
     }
 
 
