@@ -1,8 +1,8 @@
 package com.mamoru.hwslavabot.bot;
 
 import com.mamoru.hwslavabot.commons.Command;
-import com.mamoru.hwslavabot.commons.Slava;
-import com.mamoru.hwslavabot.commons.SlavaRepository;
+import com.mamoru.hwslavabot.slava.Slava;
+import com.mamoru.hwslavabot.slava.SlavaRepository;
 import com.mamoru.hwslavabot.state.State;
 import com.mamoru.hwslavabot.state.StateTracker;
 import lombok.Getter;
@@ -19,10 +19,10 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 @Setter
@@ -65,7 +65,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
                 /* manage plain text with no commands */
 
-                return manageHomeState(update);
+                return onSlavaUkraineReply(update);
 
             }
 
@@ -77,24 +77,26 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private BotApiMethod<?> onCommandAddSlava(Update update) {
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
+        String multiplier = list.remove(list.size() - 1);
         list.remove(0);
-        String res= list.stream().map(str -> str + " ").collect(Collectors.joining());
+        String res = list.stream().map(str -> str + " ").collect(Collectors.joining());
         res = res.trim();
         System.out.println(update.getMessage().getText());
         System.out.println(res);
         Optional<Slava> byId = slavaRepository.findById(res);
-        if(byId.isPresent()) {
+        if (byId.isPresent()) {
             Slava slava = byId.get();
-            return new SendMessage(update.getMessage().getChatId(),res + " already present");
+            return new SendMessage(update.getMessage().getChatId(), res + " already present");
         } else {
             Slava slava = new Slava();
             slava.setId(res);
+            slava.setMultiplier(Integer.parseInt(multiplier));
             slavaRepository.save(slava);
         }
-        return new SendMessage(update.getMessage().getChatId(),res + " added");
+        return new SendMessage(update.getMessage().getChatId(), res + " added");
     }
 
-    private BotApiMethod<?> manageHomeState(Update update) {
+    private BotApiMethod<?> onSlavaUkraineReply(Update update) {
         String text = update.getMessage().getText();
         if (update.getMessage().getText().toLowerCase(Locale.ROOT).contains("слава украине")) {
             SendMessage sendMessage = new SendMessage();
@@ -122,16 +124,21 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private String getRandomWordBD() {
         Random rnd = new Random();
-        Iterable<Slava> all = slavaRepository.findAll();
+        List<Slava> all = slavaRepository.findAll();
         List<String> result = new ArrayList<>();
-        all.forEach(slava -> result.add(slava.getId()));
+        all.forEach(slava -> {
+            Integer multiplier = slava.getMultiplier();
+            IntStream.range(0, multiplier)
+                    .mapToObj(i -> slava.getId())
+                    .forEach(result::add);
+        });
         System.out.println(result.size());
         int i = rnd.nextInt(result.size());
         return result.get(i);
     }
 
     private String getRandomWord() {
-        ArrayList<String> words= new ArrayList<>();
+        ArrayList<String> words = new ArrayList<>();
         words.add("Героям");
         words.add("Беларуси");
         words.add("Лукашенке");
@@ -142,7 +149,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         words.add("Беркуту");
         words.add("Коммунизму");
         Random rnd = new Random();
-        int i = rnd.nextInt(words.size()-1);
+        int i = rnd.nextInt(words.size() - 1);
         return words.get(i);
 
     }
