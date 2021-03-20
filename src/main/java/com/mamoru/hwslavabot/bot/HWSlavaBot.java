@@ -86,7 +86,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Optional<Slava> byId = slavaRepository.findById(res);
         if (byId.isPresent()) {
             Slava slava = byId.get();
-            return new SendMessage(update.getMessage().getChatId(), res + " already present");
+            if(slava.getMultiplier().equals(Integer.parseInt(multiplier))){
+                return new SendMessage(update.getMessage().getChatId(), res + " already present");
+            }else {
+                slava.setMultiplier(Integer.parseInt(multiplier));
+                slavaRepository.save(slava);
+                return new SendMessage(update.getMessage().getChatId(),res + " multiplier set to "+multiplier);
+            }
         } else {
             Slava slava = new Slava();
             slava.setId(res);
