@@ -25,13 +25,13 @@ public class SlaveController {
     }
 
 
-    @PutMapping("/slava")
+    @PutMapping("/slave")
     public ResponseEntity<HttpStatus> putSlave(@RequestBody Slave slava){
         slavaRepository.save(slava);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("/slava/{id}")
+    @DeleteMapping("/slave/{id}")
     public ResponseEntity<HttpStatus> deleteSlave(@PathVariable("id") Long id){
         try{
             slavaRepository.deleteById(id);
