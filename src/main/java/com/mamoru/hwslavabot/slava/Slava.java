@@ -15,6 +15,9 @@ public class Slava {
     @Column(columnDefinition = "integer default 1")
     private Integer multiplier;
 
+    @Column(name = "chatId")
+    private String chatId;
+
     @Id
     public String getId() {
         return id;
@@ -30,5 +33,13 @@ public class Slava {
 
     public void setMultiplier(Integer multiplier) {
         this.multiplier = multiplier;
+    }
+
+    public String getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }

@@ -118,7 +118,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         res = res.trim();
         System.out.println(update.getMessage().getText());
         System.out.println(res);
-        Optional<Slava> byId = slavaRepository.findById(res);
+        Optional<Slava> byId = slavaRepository.findByIdAndChatId(res,String.valueOf(update.getMessage().getChatId()));
         if (byId.isPresent()) {
             Slava slava = byId.get();
             if (slava.getMultiplier().equals(multiplier)) {
@@ -132,6 +132,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             Slava slava = new Slava();
             slava.setId(res);
             slava.setMultiplier(multiplier);
+            slava.setChatId(String.valueOf(update.getMessage().getChatId()));
             slavaRepository.save(slava);
         }
         return new SendMessage(update.getMessage().getChatId(), res + " added");
@@ -142,15 +143,16 @@ public class HWSlavaBot extends TelegramWebhookBot {
         if (text.toLowerCase(Locale.ROOT).contains("слава украине")) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(update.getMessage().getChatId());
-            sendMessage.setText(getRandomWordBD() + " Слава!");
+            sendMessage.setText(getRandomWordBD(String.valueOf(update.getMessage().getChatId())) + " Слава!");
             return sendMessage;
         }
         return null;
     }
 
-    private String getRandomWordBD() {
+    private String getRandomWordBD(String chatId) {
         Random rnd = new Random();
-        List<Slava> all = slavaRepository.findAll();
+
+        List<Slava> all = slavaRepository.findAllByChatId(chatId);
 
         List<String> result = new ArrayList<>();
         all.forEach(slava -> {
