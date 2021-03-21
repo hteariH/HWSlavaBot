@@ -27,7 +27,11 @@ public class SlaveController {
 
     @PutMapping("/slave")
     public ResponseEntity<HttpStatus> putSlave(@RequestBody Slave slava){
-        slavaRepository.save(slava);
+        Slave slave = new Slave();
+        slave.setName(slave.getName());
+        slave.setMultiplier(slave.getMultiplier());
+        slave.setChatId(slave.getChatId());
+        slavaRepository.save(slave);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
