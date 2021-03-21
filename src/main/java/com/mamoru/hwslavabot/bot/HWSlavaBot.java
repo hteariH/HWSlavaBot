@@ -82,7 +82,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private BotApiMethod<?> onCommandListSlava(Update update) {
         StringBuilder stringBuilder = new StringBuilder();
         List<Slave> all = slavaRepository.findAllByChatId(String.valueOf(update.getMessage().getChatId()));
-        all.forEach(slava -> stringBuilder.append(slava.getId()).append(" ").append(slava.getMultiplier()).append("\n"));
+        all.forEach(slava -> stringBuilder.append(slava.getName()).append(" ").append(slava.getMultiplier()).append("\n"));
         return new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString());
     }
 
