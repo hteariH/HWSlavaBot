@@ -28,9 +28,9 @@ public class SlaveController {
     @PutMapping("/slave")
     public ResponseEntity<HttpStatus> putSlave(@RequestBody Slave slava){
         Slave slave = new Slave();
-        slave.setName(slave.getName());
-        slave.setMultiplier(slave.getMultiplier());
-        slave.setChatId(slave.getChatId());
+        slave.setName(slava.getName());
+        slave.setMultiplier(slava.getMultiplier());
+        slave.setChatId(slava.getChatId());
         slavaRepository.save(slave);
         return ResponseEntity.ok(HttpStatus.OK);
     }
