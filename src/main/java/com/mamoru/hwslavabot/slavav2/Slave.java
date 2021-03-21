@@ -7,7 +7,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 @Table(name = "Slave")
 public class Slave {
 
-    @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -19,7 +20,6 @@ public class Slave {
         this.id = id;
     }
 
-    @Id
     public Long getId() {
         return id;
     }
