@@ -166,6 +166,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
         });
         Collections.shuffle(result);
         System.out.println(result.size());
+        if (result.size()==0){
+            return "Героям";
+        }
         int i = rnd.nextInt(result.size());
         return result.get(i);
     }
