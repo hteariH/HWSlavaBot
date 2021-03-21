@@ -139,7 +139,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private String getRandomWordBD() {
         Random rnd = new Random();
         List<Slava> all = slavaRepository.findAll();
-        Collections.shuffle(all);
+
         List<String> result = new ArrayList<>();
         all.forEach(slava -> {
             Integer multiplier = slava.getMultiplier();
@@ -147,6 +147,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     .mapToObj(i -> slava.getId())
                     .forEach(result::add);
         });
+        Collections.shuffle(result);
         System.out.println(result.size());
         int i = rnd.nextInt(result.size());
         return result.get(i);
