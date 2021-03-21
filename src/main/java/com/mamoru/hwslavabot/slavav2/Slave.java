@@ -31,4 +31,20 @@ public class Slave {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Integer getMultiplier() {
+        return multiplier;
+    }
+
+    public void setMultiplier(Integer multiplier) {
+        this.multiplier = multiplier;
+    }
+
+    public String getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
+    }
 }
