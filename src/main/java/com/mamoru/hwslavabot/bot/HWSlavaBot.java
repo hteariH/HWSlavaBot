@@ -81,7 +81,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         StringBuilder stringBuilder = new StringBuilder();
         List<Slava> all = slavaRepository.findAll();
         all.forEach(slava -> stringBuilder.append(slava.getId()).append(" ").append(slava.getMultiplier()).append("\n"));
-        return new SendMessage(String.valueOf(update.getMessage().getChatId()),stringBuilder.toString());
+        return new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString());
     }
 
     private BotApiMethod<?> onCommandDeleteSlava(Update update) {
@@ -101,9 +101,10 @@ public class HWSlavaBot extends TelegramWebhookBot {
     }
 
     private BotApiMethod<?> onCommandAddSlava(Update update) {
-        if(update.getMessage().getFrom().getUserName().equals("Cloversaur")){
-            return new SendMessage(String.valueOf(update.getMessage().getChatId()),"Слава Нации!");
-        }
+            if (update.getMessage().getFrom().getUserName() != null && update.getMessage().getFrom().getUserName().equals("Cloversaur")) {
+                return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
+            }
+
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
         int multiplier;
@@ -120,7 +121,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         res = res.trim();
         System.out.println(update.getMessage().getText());
         System.out.println(res);
-        Optional<Slava> byId = slavaRepository.findByIdAndChatId(res,String.valueOf(update.getMessage().getChatId()));
+        Optional<Slava> byId = slavaRepository.findByIdAndChatId(res, String.valueOf(update.getMessage().getChatId()));
         if (byId.isPresent()) {
             Slava slava = byId.get();
             if (slava.getMultiplier().equals(multiplier)) {
