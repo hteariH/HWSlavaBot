@@ -50,7 +50,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
             String incomingText = update.getMessage().getText();
             User sender = update.getMessage().getFrom();
-
             /* manage commands */
 
             if (incomingText.startsWith(Command.addSlava)) {
@@ -102,6 +101,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
     }
 
     private BotApiMethod<?> onCommandAddSlava(Update update) {
+        if(update.getMessage().getFrom().getUserName().equals("Cloversaur")){
+            return new SendMessage(String.valueOf(update.getMessage().getChatId()),"Слава Нации!");
+        }
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
         int multiplier;
