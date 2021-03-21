@@ -77,7 +77,12 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private BotApiMethod<?> onCommandAddSlava(Update update) {
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
-        String multiplier = list.remove(list.size() - 1);
+        int multiplier;
+        try {
+            multiplier = Integer.parseInt(list.remove(list.size() - 1));
+        } catch (NumberFormatException e){
+            multiplier = 1;
+        }
         list.remove(0);
         String res = list.stream().map(str -> str + " ").collect(Collectors.joining());
         res = res.trim();
@@ -86,17 +91,17 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Optional<Slava> byId = slavaRepository.findById(res);
         if (byId.isPresent()) {
             Slava slava = byId.get();
-            if(slava.getMultiplier().equals(Integer.parseInt(multiplier))){
+            if(slava.getMultiplier().equals(multiplier)){
                 return new SendMessage(update.getMessage().getChatId(), res + " already present");
             }else {
-                slava.setMultiplier(Integer.parseInt(multiplier));
+                slava.setMultiplier(multiplier);
                 slavaRepository.save(slava);
                 return new SendMessage(update.getMessage().getChatId(),res + " multiplier set to "+multiplier);
             }
         } else {
             Slava slava = new Slava();
             slava.setId(res);
-            slava.setMultiplier(Integer.parseInt(multiplier));
+            slava.setMultiplier(multiplier);
             slavaRepository.save(slava);
         }
         return new SendMessage(update.getMessage().getChatId(), res + " added");
