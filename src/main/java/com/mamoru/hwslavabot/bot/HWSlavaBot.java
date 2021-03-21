@@ -78,8 +78,11 @@ public class HWSlavaBot extends TelegramWebhookBot {
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
         int multiplier;
+        String remove;
         try {
-            multiplier = Integer.parseInt(list.remove(list.size() - 1));
+            remove = list.get(list.size() - 1);
+            multiplier = Integer.parseInt(remove);
+            list.remove(list.size()-1);
         } catch (NumberFormatException e){
             multiplier = 1;
         }
