@@ -1,8 +1,6 @@
 package com.mamoru.hwslavabot.bot;
 
 import com.mamoru.hwslavabot.commons.Command;
-import com.mamoru.hwslavabot.slava.Slava;
-import com.mamoru.hwslavabot.slava.SlavaRepository;
 import com.mamoru.hwslavabot.slavav2.Slave;
 import com.mamoru.hwslavabot.slavav2.SlaveRepository;
 import com.mamoru.hwslavabot.state.State;
@@ -22,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -86,7 +85,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
         return new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString());
     }
 
-    private BotApiMethod<?> onCommandDeleteSlava(Update update) {
+    @Transactional
+    public BotApiMethod<?> onCommandDeleteSlava(Update update) {
         String chatId = String.valueOf(update.getMessage().getChatId());
         List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
         list.remove(0);
