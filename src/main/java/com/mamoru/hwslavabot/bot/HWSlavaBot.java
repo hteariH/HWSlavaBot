@@ -80,7 +80,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> onCommandListSlava(Update update) {
         StringBuilder stringBuilder = new StringBuilder();
-        List<Slave> all = slavaRepository.findAllByChatId(String.valueOf(update.getMessage().getChatId()));
+        List<Slave> all = slavaRepository.findAllByChatIdOrderById(String.valueOf(update.getMessage().getChatId()));
         all.forEach(slava -> stringBuilder.append(slava.getName()).append(" ").append(slava.getMultiplier()).append("\n"));
         return new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString());
     }
@@ -158,7 +158,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private String getRandomWordBD(String chatId) {
         Random rnd = new Random();
 
-        List<Slave> all = slavaRepository.findAllByChatId(chatId);
+        List<Slave> all = slavaRepository.findAllByChatIdOrderById(chatId);
 
         List<String> result = new ArrayList<>();
         all.forEach(slava -> {

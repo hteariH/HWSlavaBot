@@ -9,8 +9,9 @@ import java.util.Optional;
 public interface SlaveRepository extends JpaRepository<Slave,Long> {
 
     Optional<Slave> findFirstByNameAndChatId(String name, String chatId);
-    List<Slave> findAllByChatId(String chatId);
+
+    List<Slave> findAllByChatIdOrderById(String chatId);
 
     @Transactional
-    void deleteByNameAndChatId(String trim, String chatId);
+    void deleteByNameAndChatId(String name, String chatId);
 }
