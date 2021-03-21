@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class SlavaController {
@@ -27,6 +28,16 @@ public class SlavaController {
     @PutMapping("/slava")
     public ResponseEntity<HttpStatus> putSlava(@RequestBody Slava slava){
         slavaRepository.save(slava);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/slava/{id}")
+    public ResponseEntity<HttpStatus> deleteSlava(@PathVariable("id") String id){
+        try{
+            slavaRepository.deleteById(id);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

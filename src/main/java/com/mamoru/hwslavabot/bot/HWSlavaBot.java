@@ -54,9 +54,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
             /* manage commands */
 
             if (incomingText.startsWith(Command.addSlava)) {
-
                 return onCommandAddSlava(update);
-            } else {//
+            } else if (incomingText.startsWith(Command.deleteSlava)) {
+                return onCommandDeleteSlava(update);
+            } else if (incomingText.startsWith(Command.listSlava)) {
+                return onCommandListSlava(update);
+            } else {
+                //
 //            } else if (incomingText.startsWith(Command.HELP)) {
 //
 //                return onCommandHelp(update);
@@ -74,6 +78,29 @@ public class HWSlavaBot extends TelegramWebhookBot {
         return null;
     }
 
+    private BotApiMethod<?> onCommandListSlava(Update update) {
+        StringBuilder stringBuilder = new StringBuilder();
+        List<Slava> all = slavaRepository.findAll();
+        all.forEach(slava -> stringBuilder.append(slava.getId()).append(" ").append(slava.getMultiplier()).append("\n"));
+        return new SendMessage(String.valueOf(update.getMessage().getChatId()),stringBuilder.toString());
+    }
+
+    private BotApiMethod<?> onCommandDeleteSlava(Update update) {
+        List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
+        list.remove(0);
+        String collect = list.stream().map(str -> str + " ").collect(Collectors.joining());
+        String trim = collect.trim();
+
+        Optional<Slava> byId = slavaRepository.findById(trim);
+        if (byId.isPresent()) {
+            slavaRepository.deleteById(trim);
+        } else {
+            //TODO DELETE EVERYTHING IGNORE CASE
+        }
+
+        return new SendMessage(String.valueOf(update.getMessage().getChatId()), trim + " deleted");
+    }
+
     private BotApiMethod<?> onCommandAddSlava(Update update) {
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
@@ -82,8 +109,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
         try {
             remove = list.get(list.size() - 1);
             multiplier = Integer.parseInt(remove);
-            list.remove(list.size()-1);
-        } catch (NumberFormatException e){
+            list.remove(list.size() - 1);
+        } catch (NumberFormatException e) {
             multiplier = 1;
         }
         list.remove(0);
@@ -94,12 +121,12 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Optional<Slava> byId = slavaRepository.findById(res);
         if (byId.isPresent()) {
             Slava slava = byId.get();
-            if(slava.getMultiplier().equals(multiplier)){
+            if (slava.getMultiplier().equals(multiplier)) {
                 return new SendMessage(update.getMessage().getChatId(), res + " already present");
-            }else {
+            } else {
                 slava.setMultiplier(multiplier);
                 slavaRepository.save(slava);
-                return new SendMessage(update.getMessage().getChatId(),res + " multiplier set to "+multiplier);
+                return new SendMessage(update.getMessage().getChatId(), res + " multiplier set to " + multiplier);
             }
         } else {
             Slava slava = new Slava();
@@ -112,28 +139,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> onSlavaUkraineReply(Update update) {
         String text = update.getMessage().getText();
-        if (update.getMessage().getText().toLowerCase(Locale.ROOT).contains("слава украине")) {
+        if (text.toLowerCase(Locale.ROOT).contains("слава украине")) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(update.getMessage().getChatId());
-//            sendMessage.setText(getRandomWord() + " Слава!");
             sendMessage.setText(getRandomWordBD() + " Слава!");
-//            new SetChatAdministratorCustomTitle()
             return sendMessage;
-//            return new SendMessage(update.getMessage().getChatId(), getRandomWord() + " Слава!");
-//            try {
-//                execute(sendMessage);
-//            } catch (TelegramApiException e) {
-//                e.printStackTrace();
-//            }
-//            return new PromoteChatMember(update.getMessage().getChatId(),update.getMessage().getFrom().getId());
         }
         return null;
-//        switch (text) {
-//            case "Записаться на занятия":
-//                return goToSignUp(update);
-//            default:
-//                return new SendMessage(update.getMessage().getChatId(), update.getMessage().getText());
-//        }
     }
 
     private String getRandomWordBD() {
