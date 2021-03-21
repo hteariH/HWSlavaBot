@@ -3,6 +3,8 @@ package com.mamoru.hwslavabot.bot;
 import com.mamoru.hwslavabot.commons.Command;
 import com.mamoru.hwslavabot.slava.Slava;
 import com.mamoru.hwslavabot.slava.SlavaRepository;
+import com.mamoru.hwslavabot.slavav2.Slave;
+import com.mamoru.hwslavabot.slavav2.SlaveRepository;
 import com.mamoru.hwslavabot.state.State;
 import com.mamoru.hwslavabot.state.StateTracker;
 import lombok.Getter;
@@ -35,7 +37,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private StateTracker stateTracker;
 
     @Autowired
-    private SlavaRepository slavaRepository;
+    private SlaveRepository slavaRepository;
 
 
     public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
@@ -79,20 +81,21 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> onCommandListSlava(Update update) {
         StringBuilder stringBuilder = new StringBuilder();
-        List<Slava> all = slavaRepository.findAll();
+        List<Slave> all = slavaRepository.findAllByChatId(String.valueOf(update.getMessage().getChatId()));
         all.forEach(slava -> stringBuilder.append(slava.getId()).append(" ").append(slava.getMultiplier()).append("\n"));
         return new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString());
     }
 
     private BotApiMethod<?> onCommandDeleteSlava(Update update) {
+        String chatId = String.valueOf(update.getMessage().getChatId());
         List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
         list.remove(0);
         String collect = list.stream().map(str -> str + " ").collect(Collectors.joining());
         String trim = collect.trim();
 
-        Optional<Slava> byId = slavaRepository.findById(trim);
-        if (byId.isPresent()) {
-            slavaRepository.deleteById(trim);
+        Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(trim,chatId);
+        if (byNameAndChatId.isPresent()) {
+            slavaRepository.deleteByNameAndChatId(trim,chatId);
         } else {
             //TODO DELETE EVERYTHING IGNORE CASE
         }
@@ -121,9 +124,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
         res = res.trim();
         System.out.println(update.getMessage().getText());
         System.out.println(res);
-        Optional<Slava> byId = slavaRepository.findByIdAndChatId(res, String.valueOf(update.getMessage().getChatId()));
-        if (byId.isPresent()) {
-            Slava slava = byId.get();
+        Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(res, String.valueOf(update.getMessage().getChatId()));
+        if (byNameAndChatId.isPresent()) {
+            Slave slava = byNameAndChatId.get();
             if (slava.getMultiplier().equals(multiplier)) {
                 return new SendMessage(update.getMessage().getChatId(), res + " already present");
             } else {
@@ -132,8 +135,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 return new SendMessage(update.getMessage().getChatId(), res + " multiplier set to " + multiplier);
             }
         } else {
-            Slava slava = new Slava();
-            slava.setId(res);
+            Slave slava = new Slave();
+            slava.setName(res);
             slava.setMultiplier(multiplier);
             slava.setChatId(String.valueOf(update.getMessage().getChatId()));
             slavaRepository.save(slava);
@@ -155,16 +158,15 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private String getRandomWordBD(String chatId) {
         Random rnd = new Random();
 
-        List<Slava> all = slavaRepository.findAllByChatId(chatId);
+        List<Slave> all = slavaRepository.findAllByChatId(chatId);
 
         List<String> result = new ArrayList<>();
         all.forEach(slava -> {
             Integer multiplier = slava.getMultiplier();
             IntStream.range(0, multiplier)
-                    .mapToObj(i -> slava.getId())
+                    .mapToObj(i -> slava.getName())
                     .forEach(result::add);
         });
-        Collections.shuffle(result);
         System.out.println(result.size());
         if (result.size()==0){
             return "Героям";
