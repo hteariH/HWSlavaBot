@@ -92,6 +92,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
         @Transactional
         public BotApiMethod<?> onCommandDeleteSlava (Update update){
+            if (update.getMessage().getFrom().getId().equals(906452258)) {
+                return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
+            }
             String chatId = String.valueOf(update.getMessage().getChatId());
             List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
             list.remove(0);
@@ -109,7 +112,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         }
 
         private BotApiMethod<?> onCommandAddSlava (Update update){
-            if (update.getMessage().getFrom().getId().equals("906452258")) {
+            if (update.getMessage().getFrom().getId().equals(906452258)) {
                 return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
             }
 
