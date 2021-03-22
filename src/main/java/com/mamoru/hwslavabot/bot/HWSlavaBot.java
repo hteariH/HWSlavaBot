@@ -109,7 +109,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         }
 
         private BotApiMethod<?> onCommandAddSlava (Update update){
-            if (update.getMessage().getFrom().getUserName() != null && update.getMessage().getFrom().getUserName().equals("Cloversaur")) {
+            if (update.getMessage().getFrom().getId().equals("906452258")) {
                 return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
             }
 
@@ -165,7 +165,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
             List<Slave> all = slavaRepository.findAllByChatIdOrderById(chatId);
 
-            List<String> result = new ArrayList<>();
+            List<String> result = new LinkedList<>();
             all.forEach(slava -> {
                 Integer multiplier = slava.getMultiplier();
                 IntStream.range(0, multiplier)
