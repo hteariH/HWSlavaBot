@@ -35,7 +35,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private String botPath;
     private String botUsername;
     private String botToken;
-
+    private Integer oldMessageId;
     private StateTracker stateTracker;
 
     @Autowired
@@ -79,127 +79,132 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
 //        return replyMessage;
             }
-        }catch (Exception e){
-            System.out.println("error"+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("error" + e.getMessage());
             return null;
         }
-            return null;
+        return null;
+    }
+
+    private BotApiMethod<?> onCommandListSlava(Update update) throws TelegramApiException {
+        if (update.getMessage().getFrom().getId().equals(906452258)) {
+            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Навальному!");
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        List<Slave> all = slavaRepository.findAllByChatIdOrderById(String.valueOf(update.getMessage().getChatId()));
+        all.forEach(slava -> stringBuilder.append(slava.getName()).append(" ").append(slava.getMultiplier()).append("\n"));
+        Message execute = execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString()));
+        if(oldMessageId!=null){
+            System.out.println("oldMessage="+oldMessageId);
+            execute(new DeleteMessage(String.valueOf(update.getMessage().getChatId()),oldMessageId));
+        }
+        oldMessageId=execute.getMessageId();
+        System.out.println("newMessage=" + execute.getMessageId());
+        return null;
+    }
+
+    @Transactional
+    public BotApiMethod<?> onCommandDeleteSlava(Update update) {
+        if (update.getMessage().getFrom().getId().equals(906452258)) {
+            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
+        }
+        String chatId = String.valueOf(update.getMessage().getChatId());
+        List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
+        list.remove(0);
+        String collect = list.stream().map(str -> str + " ").collect(Collectors.joining());
+        String trim = collect.trim();
+
+        Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(trim, chatId);
+        if (byNameAndChatId.isPresent()) {
+            slavaRepository.deleteByNameAndChatId(trim, chatId);
+        } else {
+            //TODO DELETE EVERYTHING IGNORE CASE
         }
 
-        private BotApiMethod<?> onCommandListSlava (Update update) throws TelegramApiException {
-            if (update.getMessage().getFrom().getId().equals(906452258)) {
-                return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Навальному!");
-            }
-            StringBuilder stringBuilder = new StringBuilder();
-            List<Slave> all = slavaRepository.findAllByChatIdOrderById(String.valueOf(update.getMessage().getChatId()));
-            all.forEach(slava -> stringBuilder.append(slava.getName()).append(" ").append(slava.getMultiplier()).append("\n"));
-            Message execute = execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString()));
-            System.out.println("oldMessage="+execute.getMessageId());
-            return null;
+        return new SendMessage(String.valueOf(update.getMessage().getChatId()), trim + " deleted");
+    }
+
+    private BotApiMethod<?> onCommandAddSlava(Update update) {
+        if (update.getMessage().getFrom().getId().equals(906452258)) {
+            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
         }
 
-        @Transactional
-        public BotApiMethod<?> onCommandDeleteSlava (Update update){
-            if (update.getMessage().getFrom().getId().equals(906452258)) {
-                return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
-            }
-            String chatId = String.valueOf(update.getMessage().getChatId());
-            List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
-            list.remove(0);
-            String collect = list.stream().map(str -> str + " ").collect(Collectors.joining());
-            String trim = collect.trim();
-
-            Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(trim, chatId);
-            if (byNameAndChatId.isPresent()) {
-                slavaRepository.deleteByNameAndChatId(trim, chatId);
+        String[] s = update.getMessage().getText().split(" ");
+        List<String> list = new ArrayList<>(List.of(s));
+        int multiplier;
+        String remove;
+        try {
+            remove = list.get(list.size() - 1);
+            multiplier = Integer.parseInt(remove);
+            list.remove(list.size() - 1);
+        } catch (NumberFormatException e) {
+            multiplier = 1;
+        }
+        list.remove(0);
+        String res = list.stream().map(str -> str + " ").collect(Collectors.joining());
+        res = res.trim();
+        System.out.println(update.getMessage().getText());
+        System.out.println(res);
+        Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(res, String.valueOf(update.getMessage().getChatId()));
+        if (byNameAndChatId.isPresent()) {
+            Slave slava = byNameAndChatId.get();
+            if (slava.getMultiplier().equals(multiplier)) {
+                return new SendMessage(update.getMessage().getChatId(), res + " already present");
             } else {
-                //TODO DELETE EVERYTHING IGNORE CASE
-            }
-
-            return new SendMessage(String.valueOf(update.getMessage().getChatId()), trim + " deleted");
-        }
-
-        private BotApiMethod<?> onCommandAddSlava (Update update){
-            if (update.getMessage().getFrom().getId().equals(906452258)) {
-                return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
-            }
-
-            String[] s = update.getMessage().getText().split(" ");
-            List<String> list = new ArrayList<>(List.of(s));
-            int multiplier;
-            String remove;
-            try {
-                remove = list.get(list.size() - 1);
-                multiplier = Integer.parseInt(remove);
-                list.remove(list.size() - 1);
-            } catch (NumberFormatException e) {
-                multiplier = 1;
-            }
-            list.remove(0);
-            String res = list.stream().map(str -> str + " ").collect(Collectors.joining());
-            res = res.trim();
-            System.out.println(update.getMessage().getText());
-            System.out.println(res);
-            Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(res, String.valueOf(update.getMessage().getChatId()));
-            if (byNameAndChatId.isPresent()) {
-                Slave slava = byNameAndChatId.get();
-                if (slava.getMultiplier().equals(multiplier)) {
-                    return new SendMessage(update.getMessage().getChatId(), res + " already present");
-                } else {
-                    slava.setMultiplier(multiplier);
-                    slavaRepository.save(slava);
-                    return new SendMessage(update.getMessage().getChatId(), res + " multiplier set to " + multiplier);
-                }
-            } else {
-                Slave slava = new Slave();
-                slava.setName(res);
                 slava.setMultiplier(multiplier);
-                slava.setChatId(String.valueOf(update.getMessage().getChatId()));
                 slavaRepository.save(slava);
+                return new SendMessage(update.getMessage().getChatId(), res + " multiplier set to " + multiplier);
             }
-            return new SendMessage(update.getMessage().getChatId(), res + " added");
+        } else {
+            Slave slava = new Slave();
+            slava.setName(res);
+            slava.setMultiplier(multiplier);
+            slava.setChatId(String.valueOf(update.getMessage().getChatId()));
+            slavaRepository.save(slava);
         }
+        return new SendMessage(update.getMessage().getChatId(), res + " added");
+    }
 
-        private BotApiMethod<?> onSlavaUkraineReply (Update update){
-            String text = update.getMessage().getText();
-            if (text.toLowerCase(Locale.ROOT).contains("слава украине")) {
-                SendMessage sendMessage = new SendMessage();
-                sendMessage.setChatId(update.getMessage().getChatId());
-                String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
-                String slava = getSlava(randomWordBD);
+    private BotApiMethod<?> onSlavaUkraineReply(Update update) {
+        String text = update.getMessage().getText();
+        if (text.toLowerCase(Locale.ROOT).contains("слава украине")) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(update.getMessage().getChatId());
+            String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
+            String slava = getSlava(randomWordBD);
 
-                sendMessage.setText(getRandomWordBD(String.valueOf(update.getMessage().getChatId())) + slava);
-                return sendMessage;
-            }
-            return null;
+            sendMessage.setText(getRandomWordBD(String.valueOf(update.getMessage().getChatId())) + slava);
+            return sendMessage;
         }
+        return null;
+    }
 
     private String getSlava(String randomPhrase) {
-        if(Character.isUpperCase(randomPhrase.charAt(0))) {
+        if (Character.isUpperCase(randomPhrase.charAt(0))) {
             return " Слава!";
-        } else{
+        } else {
             return " слава!";
         }
     }
 
-    private String getRandomWordBD (String chatId){
-            Random rnd = new Random();
+    private String getRandomWordBD(String chatId) {
+        Random rnd = new Random();
 
-            List<Slave> all = slavaRepository.findAllByChatIdOrderById(chatId);
+        List<Slave> all = slavaRepository.findAllByChatIdOrderById(chatId);
 
-            List<String> result = new LinkedList<>();
-            all.forEach(slava -> {
-                Integer multiplier = slava.getMultiplier();
-                IntStream.range(0, multiplier)
-                        .mapToObj(i -> slava.getName())
-                        .forEach(result::add);
-            });
-            System.out.println(result.size());
-            if (result.size() == 0) {
-                return "Героям";
-            }
-            int i = rnd.nextInt(result.size());
-            return result.get(i);
+        List<String> result = new LinkedList<>();
+        all.forEach(slava -> {
+            Integer multiplier = slava.getMultiplier();
+            IntStream.range(0, multiplier)
+                    .mapToObj(i -> slava.getName())
+                    .forEach(result::add);
+        });
+        System.out.println(result.size());
+        if (result.size() == 0) {
+            return "Героям";
         }
-
+        int i = rnd.nextInt(result.size());
+        return result.get(i);
     }
+
+}
