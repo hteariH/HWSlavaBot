@@ -14,12 +14,14 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -78,20 +80,22 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //        return replyMessage;
             }
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("error"+e.getMessage());
             return null;
         }
             return null;
         }
 
-        private BotApiMethod<?> onCommandListSlava (Update update){
+        private BotApiMethod<?> onCommandListSlava (Update update) throws TelegramApiException {
             if (update.getMessage().getFrom().getId().equals(906452258)) {
                 return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Навальному!");
             }
             StringBuilder stringBuilder = new StringBuilder();
             List<Slave> all = slavaRepository.findAllByChatIdOrderById(String.valueOf(update.getMessage().getChatId()));
             all.forEach(slava -> stringBuilder.append(slava.getName()).append(" ").append(slava.getMultiplier()).append("\n"));
-            return new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString());
+            Message execute = execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), stringBuilder.toString()));
+            System.out.println("oldMessage="+execute.getMessageId());
+            return null;
         }
 
         @Transactional
