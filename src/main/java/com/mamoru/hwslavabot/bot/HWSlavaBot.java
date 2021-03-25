@@ -170,9 +170,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
             return null;
         }
 
-    private String getSlava(String randomWordBD) {
-        String[] strings = randomWordBD.split(" ");
-        if(Character.isUpperCase(strings[0].charAt(0))) {
+    private String getSlava(String randomPhrase) {
+        if(Character.isUpperCase(randomPhrase.charAt(0))) {
             return " Слава!";
         } else{
             return " слава!";
