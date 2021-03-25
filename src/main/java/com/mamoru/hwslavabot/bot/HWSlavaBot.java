@@ -14,6 +14,7 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -160,13 +161,25 @@ public class HWSlavaBot extends TelegramWebhookBot {
             if (text.toLowerCase(Locale.ROOT).contains("слава украине")) {
                 SendMessage sendMessage = new SendMessage();
                 sendMessage.setChatId(update.getMessage().getChatId());
-                sendMessage.setText(getRandomWordBD(String.valueOf(update.getMessage().getChatId())) + " Слава!");
+                String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
+                String slava = getSlava(randomWordBD);
+
+                sendMessage.setText(getRandomWordBD(String.valueOf(update.getMessage().getChatId())) + slava);
                 return sendMessage;
             }
             return null;
         }
 
-        private String getRandomWordBD (String chatId){
+    private String getSlava(String randomWordBD) {
+        String[] strings = randomWordBD.split(" ");
+        if(Character.isUpperCase(strings[0].charAt(0))) {
+            return " Слава!";
+        } else{
+            return " слава!";
+        }
+    }
+
+    private String getRandomWordBD (String chatId){
             Random rnd = new Random();
 
             List<Slave> all = slavaRepository.findAllByChatIdOrderById(chatId);
@@ -184,75 +197,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
             }
             int i = rnd.nextInt(result.size());
             return result.get(i);
-        }
-
-        private String getRandomWord () {
-            ArrayList<String> words = new ArrayList<>();
-            words.add("Героям");
-            words.add("Беларуси");
-            words.add("Лукашенке");
-            words.add("Пыне");
-            words.add("США");
-            words.add("Героям");
-            words.add("Холиварсу");
-            words.add("Беркуту");
-            words.add("Коммунизму");
-            Random rnd = new Random();
-            int i = rnd.nextInt(words.size() - 1);
-            return words.get(i);
-
-        }
-
-        private BotApiMethod<?> goToSignUp (Update update){
-            stateTracker.move(update.getMessage().getContact().getUserID(), State.SIGN_UP);
-
-            return null;
-        }
-
-        private BotApiMethod<?> onCommandHelp (Update update){
-            return null;
-        }
-
-        private SendMessage onCommandStart (Update update){
-            final ReplyKeyboardMarkup replyKeyboardMarkup = getMainMenuKeyboard();
-            return createMessageWithKeyboard(update.getMessage().getChatId(), update.getMessage().getText(), replyKeyboardMarkup);
-        }
-
-        private ReplyKeyboardMarkup getMainMenuKeyboard () {
-            final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-            replyKeyboardMarkup.setSelective(true);
-            replyKeyboardMarkup.setResizeKeyboard(true);
-            replyKeyboardMarkup.setOneTimeKeyboard(false);
-
-            List<KeyboardRow> keyboard = new ArrayList<>();
-
-            KeyboardRow row1 = new KeyboardRow();
-            KeyboardRow row2 = new KeyboardRow();
-            KeyboardRow row3 = new KeyboardRow();
-            KeyboardRow row4 = new KeyboardRow();
-            row1.add(new KeyboardButton("Записаться на занятия"));
-            row2.add(new KeyboardButton("О нас"));
-            row3.add(new KeyboardButton("Купить ролики"));
-            row4.add(new KeyboardButton("Оставить отзыв"));
-            keyboard.add(row1);
-            keyboard.add(row2);
-            keyboard.add(row3);
-            keyboard.add(row4);
-            replyKeyboardMarkup.setKeyboard(keyboard);
-            return replyKeyboardMarkup;
-        }
-
-        private SendMessage createMessageWithKeyboard ( final long chatId,
-        String textMessage,
-        final ReplyKeyboardMarkup replyKeyboardMarkup){
-            final SendMessage sendMessage = new SendMessage();
-            sendMessage.enableMarkdown(true);
-            sendMessage.setChatId(String.valueOf(chatId));
-            sendMessage.setText(textMessage);
-            if (replyKeyboardMarkup != null) {
-                sendMessage.setReplyMarkup(replyKeyboardMarkup);
-            }
-            return sendMessage;
         }
 
     }
