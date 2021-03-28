@@ -173,17 +173,20 @@ public class HWSlavaBot extends TelegramWebhookBot {
             String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
             String slava = getSlava(randomWordBD);
 
-            sendMessage.setText(getRandomWordBD(String.valueOf(update.getMessage().getChatId())) + slava);
+            sendMessage.setText(randomWordBD + slava);
             return sendMessage;
         }
         return null;
     }
 
     private String getSlava(String randomPhrase) {
-        if (Character.isUpperCase(randomPhrase.charAt(0))) {
-            return " Слава!";
-        } else {
+
+        if(randomPhrase.toUpperCase().equals(randomPhrase)){
+            return " СЛАВА!";
+        } else if(randomPhrase.toLowerCase().equals(randomPhrase)) {
             return " слава!";
+        } else {
+            return " Слава!";
         }
     }
 
