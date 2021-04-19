@@ -113,7 +113,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
         list.remove(0);
         String collect = list.stream().map(str -> str + " ").collect(Collectors.joining());
         String trim = collect.trim();
-
+        if(trim.isEmpty()){
+            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "анус свой удали, пёс");
+        }
         Optional<Slave> byNameAndChatId = slavaRepository.findFirstByNameAndChatId(trim, chatId);
         if (byNameAndChatId.isPresent()) {
             slavaRepository.deleteByNameAndChatId(trim, chatId);
