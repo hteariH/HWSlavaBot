@@ -3,10 +3,11 @@ package com.mamoru.hwslavabot.bot;
 import com.mamoru.hwslavabot.commons.Command;
 import com.mamoru.hwslavabot.slavav2.Slave;
 import com.mamoru.hwslavabot.slavav2.SlaveRepository;
-import com.mamoru.hwslavabot.state.State;
 import com.mamoru.hwslavabot.state.StateTracker;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.math3.distribution.EnumeratedDistribution;
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +19,13 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 
 @Getter
 @Setter
@@ -200,20 +199,25 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Random rnd = new Random();
 
         List<Slave> all = slavaRepository.findAllByChatIdOrderById(chatId);
-
-        List<String> result = new LinkedList<>();
-        all.forEach(slava -> {
-            Integer multiplier = slava.getMultiplier();
-            IntStream.range(0, multiplier)
-                    .mapToObj(i -> slava.getName())
-                    .forEach(result::add);
-        });
-        System.out.println(result.size());
-        if (result.size() == 0) {
+        if(all.isEmpty()){
             return "Героям";
         }
-        int i = rnd.nextInt(result.size());
-        return result.get(i);
+        List<Pair<Slave,Double>> collect = all.stream().map(i -> new Pair<>(i, Double.valueOf(i.getMultiplier().toString()))).collect(Collectors.toList());
+        Slave sample = new EnumeratedDistribution<>(collect).sample();
+        return sample.getName();
+//        List<String> result = new LinkedList<>();
+//        all.forEach(slava -> {
+//            Integer multiplier = slava.getMultiplier();
+//            IntStream.range(0, multiplier)
+//                    .mapToObj(i -> slava.getName())
+//                    .forEach(result::add);
+//        });
+//        System.out.println(result.size());
+//        if (result.size() == 0) {
+//            return "Героям";
+//        }
+//        int i = rnd.nextInt(result.size());
+//        return result.get(i);
     }
 
 }
