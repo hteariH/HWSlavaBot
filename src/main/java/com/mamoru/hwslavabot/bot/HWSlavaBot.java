@@ -143,6 +143,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
             multiplier = 1;
         }
         multiplier= Math.abs(multiplier);
+        if (multiplier>100){
+            multiplier = 100;
+        }
         list.remove(0);
         String res = list.stream().map(str -> str + " ").collect(Collectors.joining());
         res = res.trim();
