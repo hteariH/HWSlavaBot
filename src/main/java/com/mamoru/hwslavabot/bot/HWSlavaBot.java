@@ -202,7 +202,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         if(all.isEmpty()){
             return "Героям";
         }
-        List<Pair<Slave,Double>> collect = all.stream().map(i -> new Pair<>(i, Double.valueOf(i.getMultiplier().toString()))).collect(Collectors.toList());
+        List<Pair<Slave, Double>> collect = all.stream().map(i -> new Pair<>(i, Double.valueOf(i.getMultiplier()))).collect(Collectors.toList());
         Slave sample = new EnumeratedDistribution<>(collect).sample();
         return sample.getName();
 //        List<String> result = new LinkedList<>();
