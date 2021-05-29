@@ -37,9 +37,9 @@ public class SlaveController {
 
     @DeleteMapping("/slave/{id}")
     public ResponseEntity<HttpStatus> deleteSlave(@PathVariable("id") Long id){
-        try{
+        try {
             slavaRepository.deleteById(id);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(HttpStatus.OK);

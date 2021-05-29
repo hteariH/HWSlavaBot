@@ -1,7 +1,6 @@
 package com.mamoru.hwslavabot.slavav2;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 
 @Entity
 @Table(name = "Slave")
