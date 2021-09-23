@@ -39,6 +39,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     @Autowired
     private SlaveRepository slavaRepository;
+    private long karnoObosralsa = 0L;
 
 
     public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
@@ -54,6 +55,14 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
                 String incomingText = update.getMessage().getText();
                 User sender = update.getMessage().getFrom();
+                //DELETE MESSAGES FROM KALOPOSTER
+                if (sender.getId().equals(906452258)){
+                    if (update.getMessage().getForwardFromChat()!=null){
+                        execute(new DeleteMessage(String.valueOf(update.getMessage().getChatId()),update.getMessage().getMessageId()));
+                        karnoObosralsa++;
+                        return new SendMessage(String.valueOf(update.getMessage().getChatId()), karnoObosralsa +" раз, когда Карнолостер обосрался");
+                    }
+                }
                 /* manage commands */
 
                 if (incomingText.startsWith(Command.addSlava)) {
@@ -80,6 +89,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             }
         } catch (Exception e) {
             System.out.println("error" + e.getMessage());
+
             return null;
         }
         return null;
