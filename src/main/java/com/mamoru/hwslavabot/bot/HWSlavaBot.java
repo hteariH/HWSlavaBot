@@ -58,7 +58,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 //DELETE MESSAGES FROM KALOPOSTER
 //                if (sender.getId().equals(906452258)){
                 if (sender.getId().equals(4990569)){
-                    if (update.getMessage().getForwardFromChat()!=null){
+                    if (update.getMessage().getForwardFromChat()!=null || update.getMessage().getForwardFromMessageId() != null){
                         execute(new DeleteMessage(String.valueOf(update.getMessage().getChatId()),update.getMessage().getMessageId()));
                         karnoObosralsa++;
                         return new SendMessage(String.valueOf(update.getMessage().getChatId()), karnoObosralsa +" раз, когда Карнолостер обосрался");
