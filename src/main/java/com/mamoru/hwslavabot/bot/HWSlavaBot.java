@@ -51,7 +51,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
 //        SendMessage replyMessage = telegramFacade.handleUpdate(update);
         try {
-            if (update.hasMessage() && update.getMessage().hasText()) {
+            if (update.hasMessage()) {
 
                 Message message = update.getMessage();
                 String incomingText = message.getText();
@@ -59,7 +59,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 //DELETE MESSAGES FROM KALOPOSTER
                 //                if (sender.getId().equals(906452258)){
                 System.out.println("WTFFFF "+sender.getId()+" WTF "+message.getForwardDate());
-                logger.error("WTFFFF "+sender.getId()+" WTF "+message.getForwardDate());
                 if (sender.getId().equals(4990569) || sender.getId().equals(123616664)){
                     System.out.println(message.getForwardDate());
                     if (message.getForwardDate() != null || message.getForwardFromChat()!=null || message.getForwardFromMessageId() != null ||
@@ -71,25 +70,26 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     }
                 }
                 /* manage commands */
-
-                if (incomingText.startsWith(Command.addSlava)) {
-                    return onCommandAddSlava(update);
-                } else if (incomingText.startsWith(Command.deleteSlava)) {
-                    return onCommandDeleteSlava(update);
-                } else if (incomingText.startsWith(Command.listSlava)) {
-                    return onCommandListSlava(update);
-                } else {
-                    //
+                if(update.getMessage().hasText()) {
+                    if (incomingText.startsWith(Command.addSlava)) {
+                        return onCommandAddSlava(update);
+                    } else if (incomingText.startsWith(Command.deleteSlava)) {
+                        return onCommandDeleteSlava(update);
+                    } else if (incomingText.startsWith(Command.listSlava)) {
+                        return onCommandListSlava(update);
+                    } else {
+                        //
 //            } else if (incomingText.startsWith(Command.HELP)) {
 //
 //                return onCommandHelp(update);
 //
 //            } else {
 
-                    /* manage plain text with no commands */
+                        /* manage plain text with no commands */
 
-                    return onSlavaUkraineReply(update);
+                        return onSlavaUkraineReply(update);
 
+                    }
                 }
 
 //        return replyMessage;
