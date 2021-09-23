@@ -53,15 +53,18 @@ public class HWSlavaBot extends TelegramWebhookBot {
         try {
             if (update.hasMessage() && update.getMessage().hasText()) {
 
-                String incomingText = update.getMessage().getText();
-                User sender = update.getMessage().getFrom();
+                Message message = update.getMessage();
+                String incomingText = message.getText();
+                User sender = message.getFrom();
                 //DELETE MESSAGES FROM KALOPOSTER
-//                if (sender.getId().equals(906452258)){
-                if (sender.getId().equals(4990569)){
-                    if (update.getMessage().getForwardFromChat()!=null || update.getMessage().getForwardFromMessageId() != null){
-                        execute(new DeleteMessage(String.valueOf(update.getMessage().getChatId()),update.getMessage().getMessageId()));
+                //                if (sender.getId().equals(906452258)){
+                if (sender.getId().equals(4990569) || sender.getId().equals(123616664)){
+                    if (message.getForwardFromChat()!=null || message.getForwardFromMessageId() != null ||
+                    message.getForwardFrom()!=null || message.getForwardDate()!=null || message.getForwardSenderName() != null){
+                        System.out.println("REPOST!!!!!!!!!!");
+                        execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
                         karnoObosralsa++;
-                        return new SendMessage(String.valueOf(update.getMessage().getChatId()), karnoObosralsa +" раз, когда Карнолостер обосрался");
+                        return new SendMessage(String.valueOf(message.getChatId()), karnoObosralsa +" раз, когда Карнолостер обосрался");
                     }
                 }
                 /* manage commands */
