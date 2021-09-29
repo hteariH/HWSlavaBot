@@ -56,9 +56,11 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //        SendMessage replyMessage = telegramFacade.handleUpdate(update);
         try {
             if (update.hasMessage()) {
-                if (update.getMessage().getText().equals("deleteCarnoPhoto123")) {
-                    deleteCarnoPHoto = !deleteCarnoPHoto;
-                    return new SendMessage(String.valueOf(update.getMessage().getChatId()), "deletephotos from carno = " + deleteCarnoPHoto);
+                if(update.getMessage().hasText()) {
+                    if (update.getMessage().getText().equals("deleteCarnoPhoto123")) {
+                        deleteCarnoPHoto = !deleteCarnoPHoto;
+                        return new SendMessage(String.valueOf(update.getMessage().getChatId()), "deletephotos from carno = " + deleteCarnoPHoto);
+                    }
                 }
                 deleteCarnoEnter(update);
 
