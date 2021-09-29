@@ -111,7 +111,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
 //        return replyMessage;
             }
-        } catch (Exception e) {
+        } catch (TelegramApiException e) {
             System.out.println("error" + e.getMessage());
 
             return null;
@@ -123,6 +123,10 @@ public class HWSlavaBot extends TelegramWebhookBot {
         Message message = update.getMessage();
 
         List<User> newChatMembers = message.getNewChatMembers();
+        if(newChatMembers != null) {
+            System.out.println("newCahtMemmers");
+            newChatMembers.forEach(System.out::println);
+        }
         if (newChatMembers != null && !newChatMembers.isEmpty()) {
             System.out.println("DELETE CALO 11111111111111");
             if (newChatMembers.get(0).getId().equals(906452258)) {
@@ -139,7 +143,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 System.out.println("DELETE CALO LOL 4444");
             }
         }
+
         if (message.getLeftChatMember() != null) {
+            System.out.println(message.getLeftChatMember());
             System.out.println("DELETE CALO LEFT");
             if (message.getLeftChatMember().getId().equals(906452258)) {
                 System.out.println("DELETE CALO LEFT 1");
