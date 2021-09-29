@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.PromoteChatMember;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.SetChatAdministratorCustomTitle;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -54,10 +56,12 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //        SendMessage replyMessage = telegramFacade.handleUpdate(update);
         try {
             if (update.hasMessage()) {
-                if(update.getMessage().getText().equals("deleteCarnoPhoto123")){
+                if (update.getMessage().getText().equals("deleteCarnoPhoto123")) {
                     deleteCarnoPHoto = !deleteCarnoPHoto;
-                     return new SendMessage(String.valueOf(update.getMessage().getChatId()),"deletephotos from carno = " + deleteCarnoPHoto);
+                    return new SendMessage(String.valueOf(update.getMessage().getChatId()), "deletephotos from carno = " + deleteCarnoPHoto);
                 }
+                deleteCarnoEnter(update);
+
                 Message message = update.getMessage();
                 String incomingText = message.getText();
                 User sender = message.getFrom();
@@ -113,6 +117,22 @@ public class HWSlavaBot extends TelegramWebhookBot {
             return null;
         }
         return null;
+    }
+
+    private void deleteCarnoEnter(Update update) throws TelegramApiException {
+        Message message = update.getMessage();
+        if (message.getNewChatMembers() != null) {
+            if (message.getNewChatMembers().get(0).getId().equals(906452258)) {
+                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
+                execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вошел"));
+            }
+        }
+        if (message.getLeftChatMember() != null) {
+            if (message.getNewChatMembers().get(0).getId().equals(906452258)) {
+                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
+                execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вышел"));
+            }
+        }
     }
 
     private BotApiMethod<?> onCommandListSlava(Update update) throws TelegramApiException {
