@@ -121,7 +121,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private void deleteCarnoEnter(Update update) throws TelegramApiException {
         Message message = update.getMessage();
-        System.out.println("DELETE CALO");
+
         if (message.getNewChatMembers() != null && !message.getNewChatMembers().isEmpty()) {
             System.out.println("DELETE CALO 11111111111111");
             if (message.getNewChatMembers().get(0).getId().equals(906452258)) {
