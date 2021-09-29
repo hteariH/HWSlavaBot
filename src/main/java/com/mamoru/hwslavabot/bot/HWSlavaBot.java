@@ -128,7 +128,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             }
         }
         if (message.getLeftChatMember() != null) {
-            if (message.getNewChatMembers().get(0).getId().equals(906452258)) {
+            if (message.getLeftChatMember().getId().equals(906452258)) {
                 execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
                 execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вышел"));
             }
