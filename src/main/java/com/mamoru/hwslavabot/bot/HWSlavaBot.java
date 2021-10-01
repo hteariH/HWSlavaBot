@@ -133,13 +133,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
             System.out.println("DELETE CALO 11111111111111");
             if (newChatMembers.get(0).getId().equals(906452258)) {
                 System.out.println("DELETE CALO 2222222");
-                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
+//                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
                 System.out.println("DELETE CALO 33333333");
                 execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вошел"));
                 System.out.println("DELETE CALO 4444");
             }else if (message.getFrom().getId().equals(906452258)) {
                 System.out.println("DELETE CALO LOL 2222222");
-                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
+//                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
                 System.out.println("DELETE CALO LOL 33333333");
                 execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вошел"));
                 System.out.println("DELETE CALO LOL 4444");
