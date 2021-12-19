@@ -143,6 +143,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 System.out.println("DELETE CALO LOL 33333333");
                 execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вошел"));
                 System.out.println("DELETE CALO LOL 4444");
+
             }
         }
 
