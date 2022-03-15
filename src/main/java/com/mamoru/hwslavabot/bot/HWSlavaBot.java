@@ -247,13 +247,19 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> onSlavaUkraineReply(Update update) {
         String text = update.getMessage().getText();
-        if (text.toLowerCase(Locale.ROOT).contains("слава украине")) {
+        if (text.toLowerCase(Locale.ROOT).contains("слава україні")) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(update.getMessage().getChatId());
             String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
             String slava = getSlava(randomWordBD);
 
             sendMessage.setText(randomWordBD + slava);
+            return sendMessage;
+        } else if(text.toLowerCase(Locale.ROOT).contains("слава украине")){
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(update.getMessage().getChatId());
+
+            sendMessage.setText("Русский корабль иди нахуй");
             return sendMessage;
         }
         return null;
