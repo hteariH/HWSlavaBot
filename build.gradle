@@ -27,8 +27,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 //    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     compile 'org.springframework.boot:spring-boot-configuration-processor'
-    //compile group: 'org.telegram', name: 'telegrambots-spring-boot-starter', version: '4.9.2'
-    compile group: 'org.telegram', name: 'telegrambots-spring-boot-starter', version: '5.7.1'
+    compile group: 'org.telegram', name: 'telegrambots-spring-boot-starter', version: '4.9.2'
+//    compile group: 'org.telegram', name: 'telegrambots-spring-boot-starter', version: '5.7.1'
 //    compile 'org.mongodb:mongo-java-driver:3.12.7'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
