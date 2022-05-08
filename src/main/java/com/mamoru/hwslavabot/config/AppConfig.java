@@ -3,11 +3,12 @@ package com.mamoru.hwslavabot.config;
 import com.mamoru.hwslavabot.bot.HWSlavaBot;
 import com.mamoru.hwslavabot.state.State;
 import com.mamoru.hwslavabot.state.StateTracker;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
-import org.telegram.telegrambots.meta.ApiContext;
 
+import javax.naming.Context;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,29 +18,28 @@ import java.util.List;
 public class AppConfig {
 
 
-
     private final HWSlavaTelegramBotConfig botConfig;
 
     public AppConfig(HWSlavaTelegramBotConfig botConfig) {
         this.botConfig = botConfig;
     }
 
-    @Bean
-    public HWSlavaBot QuizTelegramBot(StateTracker stateTracker) {
-        DefaultBotOptions options = ApiContext
-                .getInstance(DefaultBotOptions.class);
-
-        HWSlavaBot telegramBot = new HWSlavaBot(options,stateTracker);
-        telegramBot.setBotUsername(botConfig.getUserName());
-        System.out.println(botConfig.getBotToken());
-        System.out.println(System.getenv(botConfig.getBotToken()));
-        telegramBot.setBotToken(System.getenv(botConfig.getBotToken()));
-        telegramBot.setBotPath(botConfig.getWebHookPath());
-
-        registerInTgApi(telegramBot.getBotToken(), telegramBot.getBotPath());
-
-        return telegramBot;
-    }
+//    @Bean
+//    public HWSlavaBot QuizTelegramBot(StateTracker stateTracker) {
+//        DefaultBotOptions options = ApiContext
+//                .getInstance(DefaultBotOptions.class);
+//
+//        HWSlavaBot telegramBot = new HWSlavaBot(options,stateTracker);
+//        telegramBot.setBotUsername(botConfig.getUserName());
+//        System.out.println(botConfig.getBotToken());
+//        System.out.println(System.getenv(botConfig.getBotToken()));
+//        telegramBot.setBotToken(System.getenv(botConfig.getBotToken()));
+//        telegramBot.setBotPath(botConfig.getWebHookPath());
+//
+//        registerInTgApi(telegramBot.getBotToken(), telegramBot.getBotPath());
+//
+//        return telegramBot;
+//    }
 
     @Bean
     public List<String> states(){

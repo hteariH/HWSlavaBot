@@ -11,6 +11,8 @@ import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -25,6 +27,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,10 +37,16 @@ import java.util.stream.IntStream;
 
 @Getter
 @Setter
+@Component
 public class HWSlavaBot extends TelegramWebhookBot {
     private static final Logger logger = LoggerFactory.getLogger(HWSlavaBot.class);
+    @Value("${telegrambot.webHookPath}")
     private String botPath;
+
+    @Value("${telegrambot.userName}")
     private String botUsername;
+
+    @Value("${BOT_TOKEN}")
     private String botToken;
     private Integer oldMessageId;
     private StateTracker stateTracker;
@@ -46,11 +56,25 @@ public class HWSlavaBot extends TelegramWebhookBot {
     private long karnoObosralsa = 0L;
     private boolean deleteCarnoPHoto = false;
 
-
-    public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
-        super(options);
-        this.stateTracker = stateTracker;
+    @Override
+    public void onRegister() {
+        URL url = null;
+        try {
+            url = new URL("https://api.telegram.org/bot" + botToken + "/setWebhook?url=" + botPath);
+            System.out.println("url="+url.toString());
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            System.out.println("responsecode=" + responseCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+//    public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
+//        super(options);
+//        this.stateTracker = stateTracker;
+//    }
 
 
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
@@ -95,9 +119,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
 
     private BotApiMethod<?> onCommandListSlava(Update update) throws TelegramApiException {
-        if (update.getMessage().getFrom().getId().equals(906452258)) {
-            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Навальному!");
-        }
+
         StringBuilder stringBuilder = new StringBuilder();
         List<Slave> all = slavaRepository.findAllByChatIdOrderById(String.valueOf(update.getMessage().getChatId()));
         all.sort(Comparator.comparing(Slave::getName));
@@ -133,9 +155,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
     }
 
     private BotApiMethod<?> onCommandAddSlava(Update update) {
-        if (update.getMessage().getFrom().getId().equals(906452258)) {
-            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
-        }
 
         String[] s = update.getMessage().getText().split(" ");
         List<String> list = new ArrayList<>(List.of(s));
@@ -161,11 +180,11 @@ public class HWSlavaBot extends TelegramWebhookBot {
         if (byNameAndChatId.isPresent()) {
             Slave slava = byNameAndChatId.get();
             if (slava.getMultiplier().equals(multiplier)) {
-                return new SendMessage(update.getMessage().getChatId(), res + " already present");
+                return new SendMessage(String.valueOf(update.getMessage().getChatId()), res + " already present");
             } else {
                 slava.setMultiplier(multiplier);
                 slavaRepository.save(slava);
-                return new SendMessage(update.getMessage().getChatId(), res + " multiplier set to " + multiplier);
+                return new SendMessage(update.getMessage().getChatId().toString(), res + " multiplier set to " + multiplier);
             }
         } else {
             Slave slava = new Slave();
@@ -174,14 +193,14 @@ public class HWSlavaBot extends TelegramWebhookBot {
             slava.setChatId(String.valueOf(update.getMessage().getChatId()));
             slavaRepository.save(slava);
         }
-        return new SendMessage(update.getMessage().getChatId(), res + " added");
+        return new SendMessage(update.getMessage().getChatId().toString(), res + " added");
     }
 
     private BotApiMethod<?> onSlavaUkraineReply(Update update) {
         String text = update.getMessage().getText();
         if (text.toLowerCase(Locale.ROOT).contains("слава україні") || text.toLowerCase(Locale.ROOT).contains("слава украине")) {
             SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(update.getMessage().getChatId());
+            sendMessage.setChatId(update.getMessage().getChatId().toString());
             String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
             String slava = getSlava(randomWordBD);
 
