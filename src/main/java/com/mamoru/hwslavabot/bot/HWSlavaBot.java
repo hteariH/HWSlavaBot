@@ -25,6 +25,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.transaction.Transactional;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -56,38 +57,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //        SendMessage replyMessage = telegramFacade.handleUpdate(update);
         try {
             if (update.hasMessage()) {
-                if(update.getMessage().hasText()) {
-                    if (update.getMessage().getText().equals("deleteCarnoPhoto123")) {
-                        deleteCarnoPHoto = !deleteCarnoPHoto;
-                        return new SendMessage(String.valueOf(update.getMessage().getChatId()), "deletephotos from carno = " + deleteCarnoPHoto);
-                    }
-                }
-                deleteCarnoEnter(update);
 
                 Message message = update.getMessage();
                 String incomingText = message.getText();
-                User sender = message.getFrom();
-                //DELETE MESSAGES FROM KALOPOSTER
-                if (sender.getId().equals(906452258)) {
-
-                    System.out.println("WTFFFF " + sender.getId() + " WTF " + message.getForwardDate());
-//                    if (sender.getId().equals(4990569) || sender.getId().equals(123616664)) {
-                    System.out.println(message.getForwardDate());
-                    if (deleteCarnoPHoto) {
-                        if (message.getPhoto() != null) {
-                            System.out.println("PHOTO!!!!!!!!!!");
-                            execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
-//                            return new SendMessage(String.valueOf(message.getChatId()),"0_0");
-                        }
-                    }
-                    if (message.getForwardDate() != null || message.getForwardFromChat() != null || message.getForwardFromMessageId() != null ||
-                            message.getForwardFrom() != null || message.getForwardDate() != null || message.getForwardSenderName() != null) {
-                        System.out.println("REPOST!!!!!!!!!!");
-                        execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
-                        karnoObosralsa++;
-                        return new SendMessage(String.valueOf(message.getChatId()), karnoObosralsa + " раз, когда Карнолостер обосрался");
-                    }
-                }
                 /* manage commands */
                 if (update.getMessage().hasText()) {
                     if (incomingText.startsWith(Command.addSlava)) {
@@ -121,43 +93,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
         return null;
     }
 
-    private void deleteCarnoEnter(Update update) throws TelegramApiException {
-        Message message = update.getMessage();
-
-        List<User> newChatMembers = message.getNewChatMembers();
-        if(newChatMembers != null) {
-            System.out.println("newCahtMemmers");
-            newChatMembers.forEach(System.out::println);
-        }
-        if (newChatMembers != null && !newChatMembers.isEmpty()) {
-            System.out.println("DELETE CALO 11111111111111");
-            if (newChatMembers.get(0).getId().equals(906452258)) {
-                System.out.println("DELETE CALO 2222222");
-//                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
-                System.out.println("DELETE CALO 33333333");
-                execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вошел"));
-                System.out.println("DELETE CALO 4444");
-            }else if (message.getFrom().getId().equals(906452258)) {
-                System.out.println("DELETE CALO LOL 2222222");
-//                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
-                System.out.println("DELETE CALO LOL 33333333");
-                execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вошел"));
-                System.out.println("DELETE CALO LOL 4444");
-
-            }
-        }
-
-        if (message.getLeftChatMember() != null) {
-            System.out.println(message.getLeftChatMember());
-            System.out.println("DELETE CALO LEFT");
-            if (message.getLeftChatMember().getId().equals(906452258)) {
-                System.out.println("DELETE CALO LEFT 1");
-//                execute(new DeleteMessage(String.valueOf(message.getChatId()), message.getMessageId()));
-                System.out.println("DELETE CALO LEFT 2");
-                execute(new SendMessage(String.valueOf(message.getChatId()), "Главный калопостер вышел"));
-            }
-        }
-    }
 
     private BotApiMethod<?> onCommandListSlava(Update update) throws TelegramApiException {
         if (update.getMessage().getFrom().getId().equals(906452258)) {
@@ -179,9 +114,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     @Transactional
     public BotApiMethod<?> onCommandDeleteSlava(Update update) {
-        if (update.getMessage().getFrom().getId().equals(906452258)) {
-            return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Слава Нации!");
-        }
         String chatId = String.valueOf(update.getMessage().getChatId());
         List<String> list = new ArrayList<>(List.of(update.getMessage().getText().split(" ")));
         list.remove(0);
@@ -247,7 +179,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     private BotApiMethod<?> onSlavaUkraineReply(Update update) {
         String text = update.getMessage().getText();
-        if (text.toLowerCase(Locale.ROOT).contains("слава україні")) {
+        if (text.toLowerCase(Locale.ROOT).contains("слава україні") || text.toLowerCase(Locale.ROOT).contains("слава украине")) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(update.getMessage().getChatId());
             String randomWordBD = getRandomWordBD(String.valueOf(update.getMessage().getChatId()));
@@ -255,13 +187,15 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
             sendMessage.setText(randomWordBD + slava);
             return sendMessage;
-        } else if(text.toLowerCase(Locale.ROOT).contains("слава украине")){
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(update.getMessage().getChatId());
-
-            sendMessage.setText("Русский корабль иди нахуй");
-            return sendMessage;
         }
+//        else if(text.toLowerCase(Locale.ROOT).contains("слава украине")){
+//
+//            SendMessage sendMessage = new SendMessage();
+//            sendMessage.setChatId(update.getMessage().getChatId());
+//
+//            sendMessage.setText("Русский корабль иди нахуй");
+//            return sendMessage;
+//        }
         return null;
     }
 
