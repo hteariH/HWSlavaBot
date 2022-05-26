@@ -326,7 +326,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     Map<String, Boolean> fuel = new HashMap<>();
 
-    @Scheduled(fixedDelay = 60000)
+//    @Scheduled(fixedDelay = 60000)
     public void checkFuel() throws JsonProcessingException, TelegramApiException {
 
         List<Chatter> all = userRepository.findAll();
