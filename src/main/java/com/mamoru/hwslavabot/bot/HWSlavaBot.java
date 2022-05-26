@@ -105,6 +105,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
                                 city = s[1];
                             }
                             List<String> fuel = getFuel(city);
+                            if (fuel.isEmpty()){
+                                execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці в місті"));
+                            }
                             fuel.forEach(f -> {
                                 try {
                                     execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), f));
@@ -136,6 +139,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //                            execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Subs"));
 
                             List<String> fuel = getFuel(city);
+                            if (fuel.isEmpty()){
+                                execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці в місті"));
+                            }
                             fuel.forEach(f -> {
                                 try {
                                     execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), f));
