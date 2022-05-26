@@ -6,6 +6,7 @@ import com.mamoru.hwslavabot.state.StateTracker;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import javax.naming.Context;
@@ -15,6 +16,7 @@ import java.net.URL;
 import java.util.List;
 
 @Configuration
+@EnableScheduling
 public class AppConfig {
 
 
