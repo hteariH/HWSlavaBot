@@ -352,8 +352,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //                System.out.println("CITY:" + station.path("city").asText());
                 if (user.getCity().equals("all")){
                     stationsNumbers.add(String.valueOf(station.get("id").asLong()));
-                } else
-                if (station.path("city").asText().equalsIgnoreCase(user.getCity())) {
+                } else if (station.path("city").asText().equalsIgnoreCase(user.getCity())) {
                     stationsNumbers.add(String.valueOf(station.get("id").asLong()));
                 }
             }
@@ -368,7 +367,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
 //                System.out.println("DESCRIPTION:" + s);
                 if (s.contains("95 - Готівка") || s.contains("92 - Готівка")) {
-                    System.out.println("M95");
+//                    System.out.println("M95");
                     JsonNode name = tree.path("data").path("name");
                     System.out.println(name.asText());
                     if (!fuel.get(stationsNumber)) {
@@ -380,6 +379,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 }
 
             }
+
+            System.out.println("City check for user:"+user.getChatId()+" finished");
         }
 
 
