@@ -8,6 +8,8 @@ import com.mamoru.hwslavabot.commons.Command;
 import com.mamoru.hwslavabot.slavav2.Slave;
 import com.mamoru.hwslavabot.slavav2.SlaveRepository;
 import com.mamoru.hwslavabot.state.StateTracker;
+import com.mamoru.hwslavabot.users.User;
+import com.mamoru.hwslavabot.users.UserRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
@@ -30,7 +32,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.transaction.Transactional;
@@ -83,6 +84,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //        this.stateTracker = stateTracker;
 //    }
 
+    @Autowired
+    private UserRepository userRepository;
 
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
 //        SendMessage replyMessage = telegramFacade.handleUpdate(update);
@@ -116,6 +119,26 @@ public class HWSlavaBot extends TelegramWebhookBot {
                             });
                             return null;
                         } catch (Exception e) {
+                        }
+                    } else if (incomingText.startsWith("/subscribe")) {
+                        try {
+                            String[] s = update.getMessage().getText().split(" ");
+                            String city = "київ";
+                            if (s.length > 1) {
+                                city = s[1];
+                            }
+                            String s1 = String.valueOf(update.getMessage().getChatId());
+                            Optional<User> byChatId = userRepository.findByChatId(s1);
+
+                            User user = byChatId.orElseGet(() -> {
+                                User user1 = new User();
+                                user1.setChatId(s1);
+                                return user1;
+                            });
+                            user.setCity(city);
+                            userRepository.save(user);
+                        } catch (Exception e) {
+
                         }
                     } else {
                         //
@@ -287,42 +310,48 @@ public class HWSlavaBot extends TelegramWebhookBot {
     @Scheduled(fixedDelay = 60000)
     public void checkFuel() throws JsonProcessingException, TelegramApiException {
 
-        ArrayList<String> stationsNumbers = new ArrayList<>();
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response
-                = restTemplate.getForEntity(stationsURL, String.class);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody());
-        JsonNode path = root.path("data").path("stations");
-        ArrayNode stations = (ArrayNode) path;
-        for (JsonNode station : stations) {
-            System.out.println("CITY:" + station.path("city").asText());
-            if (station.path("city").asText().equalsIgnoreCase("київ")) {
-                stationsNumbers.add(String.valueOf(station.get("id").asLong()));
-            }
-        }
-        ArrayList<String> objects = new ArrayList<>();
-        for (String stationsNumber : stationsNumbers) {
-            if (!fuel.containsKey(stationsNumber)) {
-                fuel.put(stationsNumber, false);
-            }
-            ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
-            JsonNode tree = mapper.readTree(forEntity.getBody());
-            String s = tree.path("data").path("workDescription").asText();
-
-            System.out.println("DESCRIPTION:" + s);
-            if (s.contains("95 - Готівка")) {
-                System.out.println("M95");
-                JsonNode name = tree.path("data").path("name");
-                System.out.println(name.asText());
-                if (!fuel.get(stationsNumber)) {
-                    fuel.put(stationsNumber, true);
-                    execute(new SendMessage("123616664", name.asText()));
+        List<User> all = userRepository.findAll();
+        for (User user : all) {
+            ArrayList<String> stationsNumbers = new ArrayList<>();
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response
+                    = restTemplate.getForEntity(stationsURL, String.class);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+            JsonNode path = root.path("data").path("stations");
+            ArrayNode stations = (ArrayNode) path;
+            for (JsonNode station : stations) {
+                System.out.println("CITY:" + station.path("city").asText());
+                if (station.path("city").asText().equalsIgnoreCase(user.getCity())) {
+                    stationsNumbers.add(String.valueOf(station.get("id").asLong()));
                 }
-            } else {
-                fuel.put(stationsNumber, false);
+            }
+            ArrayList<String> objects = new ArrayList<>();
+            for (String stationsNumber : stationsNumbers) {
+                if (!fuel.containsKey(stationsNumber)) {
+                    fuel.put(stationsNumber, false);
+                }
+                ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
+                JsonNode tree = mapper.readTree(forEntity.getBody());
+                String s = tree.path("data").path("workDescription").asText();
+
+                System.out.println("DESCRIPTION:" + s);
+                if (s.contains("95 - Готівка")) {
+                    System.out.println("M95");
+                    JsonNode name = tree.path("data").path("name");
+                    System.out.println(name.asText());
+                    if (!fuel.get(stationsNumber)) {
+                        fuel.put(stationsNumber, true);
+                        execute(new SendMessage(user.getChatId(), name.asText()));
+                    }
+                } else {
+                    fuel.put(stationsNumber, false);
+                }
+
             }
         }
+
+
     }
 
 
@@ -353,7 +382,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 System.out.println("M95");
                 JsonNode name = tree.path("data").path("name");
                 System.out.println(name.asText());
-                    objects.add(name.asText());
+                objects.add(name.asText());
 //                }
             }
         }
