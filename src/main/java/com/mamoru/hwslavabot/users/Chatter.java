@@ -3,8 +3,8 @@ package com.mamoru.hwslavabot.users;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "User")
-public class User {
+@Table(name = "Chatter")
+public class Chatter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -8,7 +8,7 @@ import com.mamoru.hwslavabot.commons.Command;
 import com.mamoru.hwslavabot.slavav2.Slave;
 import com.mamoru.hwslavabot.slavav2.SlaveRepository;
 import com.mamoru.hwslavabot.state.StateTracker;
-import com.mamoru.hwslavabot.users.User;
+import com.mamoru.hwslavabot.users.Chatter;
 import com.mamoru.hwslavabot.users.UserRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,13 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.PromoteChatMember;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.SetChatAdministratorCustomTitle;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -40,7 +36,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 @Getter
@@ -128,10 +123,10 @@ public class HWSlavaBot extends TelegramWebhookBot {
                                 city = s[1];
                             }
                             String s1 = String.valueOf(update.getMessage().getChatId());
-                            Optional<User> byChatId = userRepository.findByChatId(s1);
+                            Optional<Chatter> byChatId = userRepository.findFirstByChatId(s1);
 
-                            User user = byChatId.orElseGet(() -> {
-                                User user1 = new User();
+                            Chatter user = byChatId.orElseGet(() -> {
+                                Chatter user1 = new Chatter();
                                 user1.setChatId(s1);
                                 return user1;
                             });
@@ -310,8 +305,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
     @Scheduled(fixedDelay = 60000)
     public void checkFuel() throws JsonProcessingException, TelegramApiException {
 
-        List<User> all = userRepository.findAll();
-        for (User user : all) {
+        List<Chatter> all = userRepository.findAll();
+
+        for (Chatter user : all) {
             ArrayList<String> stationsNumbers = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response
