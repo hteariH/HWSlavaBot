@@ -115,13 +115,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     } else if (incomingText.startsWith("/get")) {
                         try {
                             String[] s = update.getMessage().getText().split(" ");
-                            String city = "київ";
+                            String city = null;
                             if (s.length > 1) {
                                 city = s[1];
                             }
                             List<String> fuel = getFuel(city);
                             if (fuel.isEmpty()){
-                                execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці в місті"));
+                                execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці"));
                             }
                             fuel.forEach(f -> {
                                 try {
@@ -136,7 +136,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     } else if (incomingText.startsWith("/subscribe")) {
                         try {
                             String[] s = update.getMessage().getText().split(" ");
-                            String city = "київ";
+                            String city = "";
                             if (s.length > 1) {
                                 city = s[1];
                             }
@@ -155,7 +155,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
                             List<String> fuel = getFuel(city);
                             if (fuel.isEmpty()){
-                                execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці в місті"));
+                                execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці"));
                             }
                             fuel.forEach(f -> {
                                 try {
@@ -350,6 +350,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
             ArrayNode stations = (ArrayNode) path;
             for (JsonNode station : stations) {
                 System.out.println("CITY:" + station.path("city").asText());
+                if (user.getCity().equals("")){
+                    stationsNumbers.add(String.valueOf(station.get("id").asLong()));
+                } else
                 if (station.path("city").asText().equalsIgnoreCase(user.getCity())) {
                     stationsNumbers.add(String.valueOf(station.get("id").asLong()));
                 }
@@ -395,7 +398,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
         ArrayNode stations = (ArrayNode) path;
         for (JsonNode station : stations) {
             System.out.println("CITY:" + station.path("city").asText());
-            if (station.path("city").asText().equalsIgnoreCase(city)) {
+            if (city == null){
+                stationsNumbers.add(String.valueOf(station.get("id").asLong()));
+            } else if (station.path("city").asText().equalsIgnoreCase(city)) {
                 stationsNumbers.add(String.valueOf(station.get("id").asLong()));
             }
         }
