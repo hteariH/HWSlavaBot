@@ -99,6 +99,23 @@ public class HWSlavaBot extends TelegramWebhookBot {
                         return onCommandDeleteSlava(update);
                     } else if (incomingText.startsWith(Command.listSlava)) {
                         return onCommandListSlava(update);
+                    } else if (incomingText.startsWith("/get")) {
+                        try {
+                            String[] s = update.getMessage().getText().split(" ");
+                            String city = "київ";
+                            if (s.length>1){
+                                city = s[1];
+                            }
+                            List<String> fuel = getFuel(city);
+                            fuel.forEach(f-> {
+                                try {
+                                    execute(new SendMessage(update.getMessage().getChatId(),f));
+                                } catch (TelegramApiException e) {
+//                                    e.printStackTrace();
+                                }
+                            });
+                            return null;
+                        } catch (Exception e){}
                     } else {
                         //
 //            } else if (incomingText.startsWith(Command.HELP)) {
@@ -283,7 +300,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 stationsNumbers.add(String.valueOf(station.get("id").asLong()));
             }
         }
-
+        ArrayList<String> objects = new ArrayList<>();
         for (String stationsNumber : stationsNumbers) {
             if (!fuel.containsKey(stationsNumber)) {
                 fuel.put(stationsNumber, false);
@@ -305,7 +322,49 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 fuel.put(stationsNumber, false);
             }
         }
+    }
 
+
+    public List<String> getFuel(String city) throws JsonProcessingException, TelegramApiException {
+
+        ArrayList<String> stationsNumbers = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response
+                = restTemplate.getForEntity(stationsURL, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
+        JsonNode path = root.path("data").path("stations");
+        ArrayNode stations = (ArrayNode) path;
+        for (JsonNode station : stations) {
+            System.out.println("CITY:" + station.path("city").asText());
+            if (station.path("city").asText().equalsIgnoreCase(city)) {
+                stationsNumbers.add(String.valueOf(station.get("id").asLong()));
+            }
+        }
+        ArrayList<String> objects = new ArrayList<>();
+        for (String stationsNumber : stationsNumbers) {
+            if (!fuel.containsKey(stationsNumber)) {
+                fuel.put(stationsNumber, false);
+            }
+            ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
+            JsonNode tree = mapper.readTree(forEntity.getBody());
+            String s = tree.path("data").path("workDescription").asText();
+
+            System.out.println("DESCRIPTION:" + s);
+            if (s.contains("95 - Готівка")) {
+                System.out.println("M95");
+                JsonNode name = tree.path("data").path("name");
+                System.out.println(name.asText());
+                if (!fuel.get(stationsNumber)) {
+                    fuel.put(stationsNumber, true);
+                    objects.add(name.asText());
+//                    execute(new SendMessage("123616664", name.asText()));
+                }
+            } else {
+                fuel.put(stationsNumber, false);
+            }
+        }
+        return objects;
     }
 
 }
