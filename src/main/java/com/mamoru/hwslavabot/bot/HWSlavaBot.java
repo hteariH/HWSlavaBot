@@ -53,8 +53,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
     @Value("${BOT_TOKEN}")
     private String botToken;
 
-    @Value("${BOT_WOG_TOKEN}")
-    private String botWogToken;
     private Integer oldMessageId;
     private StateTracker stateTracker;
 
@@ -65,6 +63,10 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     @Override
     public void onRegister() {
+        System.out.println("REGISTERINGBOT");
+        System.out.println(botUsername);
+        System.out.println(botPath);
+        System.out.println(botToken);
         URL url = null;
         try {
             url = new URL("https://api.telegram.org/bot" + botToken + "/setWebhook?url=" + botPath);
