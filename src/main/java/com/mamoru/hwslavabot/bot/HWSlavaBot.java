@@ -131,9 +131,10 @@ public class HWSlavaBot extends TelegramWebhookBot {
                                 return user1;
                             });
                             user.setCity(city);
+                            System.out.println(user);
                             userRepository.save(user);
                         } catch (Exception e) {
-
+                            e.printStackTrace();
                         }
                     } else {
                         //
