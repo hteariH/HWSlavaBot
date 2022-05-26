@@ -344,9 +344,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
         }
         ArrayList<String> objects = new ArrayList<>();
         for (String stationsNumber : stationsNumbers) {
-            if (!fuel.containsKey(stationsNumber)) {
-                fuel.put(stationsNumber, false);
-            }
             ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
             JsonNode tree = mapper.readTree(forEntity.getBody());
             String s = tree.path("data").path("workDescription").asText();
@@ -356,13 +353,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 System.out.println("M95");
                 JsonNode name = tree.path("data").path("name");
                 System.out.println(name.asText());
-                if (!fuel.get(stationsNumber)) {
-                    fuel.put(stationsNumber, true);
                     objects.add(name.asText());
-//                    execute(new SendMessage("123616664", name.asText()));
-                }
-            } else {
-                fuel.put(stationsNumber, false);
+//                }
             }
         }
         return objects;
