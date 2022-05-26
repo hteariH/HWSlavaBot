@@ -349,7 +349,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             JsonNode path = root.path("data").path("stations");
             ArrayNode stations = (ArrayNode) path;
             for (JsonNode station : stations) {
-                System.out.println("CITY:" + station.path("city").asText());
+//                System.out.println("CITY:" + station.path("city").asText());
                 if (user.getCity().equals("")){
                     stationsNumbers.add(String.valueOf(station.get("id").asLong()));
                 } else
@@ -366,8 +366,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 JsonNode tree = mapper.readTree(forEntity.getBody());
                 String s = tree.path("data").path("workDescription").asText();
 
-                System.out.println("DESCRIPTION:" + s);
-                if (s.contains("95 - Готівка")) {
+//                System.out.println("DESCRIPTION:" + s);
+                if (s.contains("95 - Готівка") || s.contains("92 - Готівка")) {
                     System.out.println("M95");
                     JsonNode name = tree.path("data").path("name");
                     System.out.println(name.asText());
@@ -397,7 +397,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         JsonNode path = root.path("data").path("stations");
         ArrayNode stations = (ArrayNode) path;
         for (JsonNode station : stations) {
-            System.out.println("CITY:" + station.path("city").asText());
+//            System.out.println("CITY:" + station.path("city").asText());
             if (city == null){
                 stationsNumbers.add(String.valueOf(station.get("id").asLong()));
             } else if (station.path("city").asText().equalsIgnoreCase(city)) {
@@ -410,8 +410,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
             JsonNode tree = mapper.readTree(forEntity.getBody());
             String s = tree.path("data").path("workDescription").asText();
 
-            System.out.println("DESCRIPTION:" + s);
-            if (s.contains("95 - Готівка")) {
+//            System.out.println("DESCRIPTION:" + s);
+            if (s.contains("95 - Готівка") || s.contains("92 - Готівка")) {
                 System.out.println("M95");
                 JsonNode name = tree.path("data").path("name");
                 System.out.println(name.asText());
