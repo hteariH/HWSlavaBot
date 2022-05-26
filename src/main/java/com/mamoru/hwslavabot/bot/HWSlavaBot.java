@@ -77,17 +77,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
             e.printStackTrace();
         }
 
-        try {
-            url = new URL("https://api.telegram.org/bot" + botWogToken + "/setWebhook?url=" + botPath);
-            System.out.println("url=" + url.toString());
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            int responseCode = con.getResponseCode();
-            System.out.println("responsecode=" + responseCode);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
 
