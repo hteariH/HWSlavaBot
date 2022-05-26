@@ -295,7 +295,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                 System.out.println("M95");
                 JsonNode name = tree.get("data").path("name");
                 System.out.println(name.asText());
-                execute(new SendMessage(123616664L,name.asText()));
+                execute(new SendMessage("123616664",name.asText()));
             }
         }
 
