@@ -104,6 +104,12 @@ public class HWSlavaBot extends TelegramWebhookBot {
                         return onCommandAddSlava(update);
                     } else if (incomingText.startsWith(Command.deleteSlava)) {
                         return onCommandDeleteSlava(update);
+                    } else if (incomingText.startsWith("/start")) {
+                        return new SendMessage(String.valueOf(update.getMessage().getChatId()),"Щоб користуватись ботом є дві команди:\n" +
+                                "/get <Назва міста> - Отримати список азс із бензином в наявності\n" +
+                                "/subscribe <Назва міста> - Підписатися на нотіфікації коли на нових азс в вказаному місті з'явиться бензин\n" +
+                                "Наприклад:\n" +
+                                "/get Київ");
                     } else if (incomingText.startsWith(Command.listSlava)) {
                         return onCommandListSlava(update);
                     } else if (incomingText.startsWith("/get")) {
