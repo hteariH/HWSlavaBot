@@ -68,7 +68,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
         URL url = null;
         try {
             url = new URL("https://api.telegram.org/bot" + botToken + "/setWebhook?url=" + botPath);
-            System.out.println("url="+url.toString());
+            System.out.println("url=" + url.toString());
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             int responseCode = con.getResponseCode();
@@ -262,11 +262,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
     }
 
 
-
-
     String stationsURL = "https://api.wog.ua/fuel_stations";
 
-
+    Map<String, Boolean> fuel = new HashMap<>();
 
     @Scheduled(fixedDelay = 60000)
     public void checkFuel() throws JsonProcessingException, TelegramApiException {
@@ -280,23 +278,31 @@ public class HWSlavaBot extends TelegramWebhookBot {
         JsonNode path = root.path("data").path("stations");
         ArrayNode stations = (ArrayNode) path;
         for (JsonNode station : stations) {
-            System.out.println("CITY:"+station.path("city").asText());
-            if(station.path("city").asText().equalsIgnoreCase("київ")){
+            System.out.println("CITY:" + station.path("city").asText());
+            if (station.path("city").asText().equalsIgnoreCase("київ")) {
                 stationsNumbers.add(String.valueOf(station.get("id").asLong()));
             }
         }
 
         for (String stationsNumber : stationsNumbers) {
+            if (!fuel.containsKey(stationsNumber)) {
+                fuel.put(stationsNumber, false);
+            }
             ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
             JsonNode tree = mapper.readTree(forEntity.getBody());
             String s = tree.path("data").path("workDescription").asText();
 
             System.out.println("DESCRIPTION:" + s);
-            if(s.contains("М95 - Готівка")){
+            if (s.contains("95 - Готівка")) {
                 System.out.println("M95");
                 JsonNode name = tree.path("data").path("name");
                 System.out.println(name.asText());
-                execute(new SendMessage("123616664",name.asText()));
+                if (!fuel.get(stationsNumber)) {
+                    fuel.put(stationsNumber, true);
+                    execute(new SendMessage("123616664", name.asText()));
+                }
+            } else {
+                fuel.put(stationsNumber, false);
             }
         }
 
