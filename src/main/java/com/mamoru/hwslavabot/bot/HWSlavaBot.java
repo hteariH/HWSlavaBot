@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 @Component
 public class HWSlavaBot extends TelegramWebhookBot {
     private static final Logger logger = LoggerFactory.getLogger(HWSlavaBot.class);
+
     @Value("${telegrambot.webHookPath}")
     private String botPath;
 
@@ -51,6 +52,9 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
     @Value("${BOT_TOKEN}")
     private String botToken;
+
+    @Value("${BOT_WOG_TOKEN}")
+    private String botWogToken;
     private Integer oldMessageId;
     private StateTracker stateTracker;
 
@@ -72,7 +76,21 @@ public class HWSlavaBot extends TelegramWebhookBot {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            url = new URL("https://api.telegram.org/bot" + botWogToken + "/setWebhook?url=" + botPath);
+            System.out.println("url=" + url.toString());
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            System.out.println("responsecode=" + responseCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
+
+
 
 //    public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
 //        super(options);

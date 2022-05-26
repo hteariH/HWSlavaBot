@@ -23,4 +23,11 @@ public class WebhookController {
         System.out.println(update);
         return telegramBot.onWebhookUpdateReceived(update);
     }
+//
+//    @RequestMapping(value = "/wog", method = RequestMethod.POST)
+//    public BotApiMethod<?> onUpdateReceived(@RequestBody Update update) {
+//        System.out.println("update recieved");
+//        System.out.println(update);
+//        return telegramBot.onWebhookUpdateReceived(update);
+//    }
 }
