@@ -103,19 +103,20 @@ public class HWSlavaBot extends TelegramWebhookBot {
                         try {
                             String[] s = update.getMessage().getText().split(" ");
                             String city = "київ";
-                            if (s.length>1){
+                            if (s.length > 1) {
                                 city = s[1];
                             }
                             List<String> fuel = getFuel(city);
-                            fuel.forEach(f-> {
+                            fuel.forEach(f -> {
                                 try {
-                                    execute(new SendMessage(update.getMessage().getChatId(),f));
+                                    execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), f));
                                 } catch (TelegramApiException e) {
 //                                    e.printStackTrace();
                                 }
                             });
                             return null;
-                        } catch (Exception e){}
+                        } catch (Exception e) {
+                        }
                     } else {
                         //
 //            } else if (incomingText.startsWith(Command.HELP)) {
