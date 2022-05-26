@@ -1,5 +1,9 @@
 package com.mamoru.hwslavabot.bot;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mamoru.hwslavabot.commons.Command;
 import com.mamoru.hwslavabot.slavav2.Slave;
 import com.mamoru.hwslavabot.slavav2.SlaveRepository;
@@ -12,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -252,6 +259,46 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //        }
 //        int i = rnd.nextInt(result.size());
 //        return result.get(i);
+    }
+
+
+
+
+    String stationsURL = "https://api.wog.ua/fuel_stations";
+
+
+
+    @Scheduled(fixedDelay = 60000)
+    public void checkFuel() throws JsonProcessingException, TelegramApiException {
+
+        ArrayList<String> stationsNumbers = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response
+                = restTemplate.getForEntity(stationsURL, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
+        JsonNode path = root.path("data").path("stations");
+        ArrayNode stations = (ArrayNode) path;
+        for (JsonNode station : stations) {
+            System.out.println("CITY:"+station.get("city").asText());
+            if(station.get("city").asText().equalsIgnoreCase("kyiv")){
+                stationsNumbers.add(String.valueOf(station.get("id").asLong()));
+            }
+        }
+        for (String stationsNumber : stationsNumbers) {
+            ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
+            JsonNode tree = mapper.readTree(forEntity.getBody());
+            String s = tree.path("data").path("workDescription").asText();
+
+            System.out.println("DESCRIPTION:" + s);
+            if(s.contains("М95 - Готівка")){
+                System.out.println("M95");
+                JsonNode name = tree.get("data").path("name");
+                System.out.println(name.asText());
+                execute(new SendMessage(123616664L,name.asText()));
+            }
+        }
+
     }
 
 }
