@@ -281,10 +281,11 @@ public class HWSlavaBot extends TelegramWebhookBot {
         ArrayNode stations = (ArrayNode) path;
         for (JsonNode station : stations) {
             System.out.println("CITY:"+station.path("city").asText());
-            if(station.path("city").asText().equalsIgnoreCase("київ") || station.path("city").asText().equalsIgnoreCase("черкаси")){
+            if(station.path("city").asText().equalsIgnoreCase("київ")){
                 stationsNumbers.add(String.valueOf(station.get("id").asLong()));
             }
         }
+
         for (String stationsNumber : stationsNumbers) {
             ResponseEntity<String> forEntity = restTemplate.getForEntity(stationsURL + "/" + stationsNumber, String.class);
             JsonNode tree = mapper.readTree(forEntity.getBody());
