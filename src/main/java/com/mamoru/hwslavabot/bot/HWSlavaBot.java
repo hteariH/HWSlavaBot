@@ -280,8 +280,8 @@ public class HWSlavaBot extends TelegramWebhookBot {
         JsonNode path = root.path("data").path("stations");
         ArrayNode stations = (ArrayNode) path;
         for (JsonNode station : stations) {
-            System.out.println("CITY:"+station.get("city").asText());
-            if(station.get("city").asText().equalsIgnoreCase("київ") || station.get("city").asText().equalsIgnoreCase("черкаси")){
+            System.out.println("CITY:"+station.path("city").asText());
+            if(station.path("city").asText().equalsIgnoreCase("київ") || station.path("city").asText().equalsIgnoreCase("черкаси")){
                 stationsNumbers.add(String.valueOf(station.get("id").asLong()));
             }
         }
@@ -293,7 +293,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             System.out.println("DESCRIPTION:" + s);
             if(s.contains("М95 - Готівка")){
                 System.out.println("M95");
-                JsonNode name = tree.get("data").path("name");
+                JsonNode name = tree.path("data").path("name");
                 System.out.println(name.asText());
                 execute(new SendMessage("123616664",name.asText()));
             }
