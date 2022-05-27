@@ -82,7 +82,6 @@ public class HWSlavaBot extends TelegramWebhookBot {
     }
 
 
-
 //    public HWSlavaBot(DefaultBotOptions options, StateTracker stateTracker) {
 //        super(options);
 //        this.stateTracker = stateTracker;
@@ -105,7 +104,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     } else if (incomingText.startsWith(Command.deleteSlava)) {
                         return onCommandDeleteSlava(update);
                     } else if (incomingText.startsWith("/start")) {
-                        return new SendMessage(String.valueOf(update.getMessage().getChatId()),"Щоб користуватись ботом є дві команди:\n" +
+                        return new SendMessage(String.valueOf(update.getMessage().getChatId()), "Щоб користуватись ботом є дві команди:\n" +
                                 "/get <Назва міста> - Отримати список азс із бензином в наявності\n" +
                                 "/subscribe <Назва міста> - Підписатися на нотіфікації коли на нових азс в вказаному місті з'явиться бензин\n" +
                                 "Наприклад:\n" +
@@ -120,7 +119,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                                 city = s[1];
                             }
                             List<String> fuel = getFuel(city);
-                            if (fuel.isEmpty()){
+                            if (fuel.isEmpty()) {
                                 execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці"));
                             }
                             fuel.forEach(f -> {
@@ -154,7 +153,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
 //                            execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Subs"));
 
                             List<String> fuel = getFuel(city);
-                            if (fuel.isEmpty()){
+                            if (fuel.isEmpty()) {
                                 execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), "Немає бензину на жодній заправці"));
                             }
                             fuel.forEach(f -> {
@@ -338,7 +337,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     public void checkFuel() throws JsonProcessingException, TelegramApiException {
 
         List<Chatter> all = userRepository.findAll();
-        Map<String,List<String>> fuelByCity = new HashMap<>();
+        Map<String, List<String>> fuelByCity = new HashMap<>();
         for (Chatter user : all) {
             ArrayList<String> stationsNumbers = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();
@@ -350,7 +349,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             ArrayNode stations = (ArrayNode) path;
             for (JsonNode station : stations) {
 //                System.out.println("CITY:" + station.path("city").asText());
-                if (user.getCity().equals("all")){
+                if (user.getCity().equals("all")) {
                     stationsNumbers.add(String.valueOf(station.get("id").asLong()));
                 } else if (station.path("city").asText().equalsIgnoreCase(user.getCity())) {
                     stationsNumbers.add(String.valueOf(station.get("id").asLong()));
@@ -372,7 +371,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     System.out.println(name.asText());
                     if (!fuel.get(stationsNumber)) {
                         List<String> strings = fuelByCity.get(user.getCity());
-                        if(strings == null){
+                        if (strings == null) {
                             strings = new ArrayList<>();
                         }
                         strings.add(name.asText());
@@ -385,14 +384,15 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
             }
 
-            System.out.println("City check for user:"+user.getChatId()+" finished");
+            System.out.println("City check for user:" + user.getChatId() + " finished");
         }
         for (Chatter user : all) {
             List<String> strings = fuelByCity.get(user.getCity());
-            for (String f : strings) {
-                System.out.println("sending message to user:"+ user.getChatId()+ " AZS:"+ f);
-                execute(new SendMessage(user.getChatId(), f));
-            }
+            if (strings != null)
+                for (String f : strings) {
+                    System.out.println("sending message to user:" + user.getChatId() + " AZS:" + f);
+                    execute(new SendMessage(user.getChatId(), f));
+                }
         }
 
     }
