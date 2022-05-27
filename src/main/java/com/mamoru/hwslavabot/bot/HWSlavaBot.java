@@ -375,6 +375,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
                             strings = new ArrayList<>();
                         }
                         strings.add(name.asText());
+                        fuelByCity.put(user.getCity().toLowerCase(),strings);
                         fuel.put(stationsNumber, true);
 //                        execute(new SendMessage(user.getChatId(), name.asText()));
                     }
@@ -387,7 +388,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
             System.out.println("City check for user:" + user.getChatId() + " finished");
         }
         for (Chatter user : all) {
-            List<String> strings = fuelByCity.get(user.getCity());
+            List<String> strings = fuelByCity.get(user.getCity().toLowerCase());
             if (strings != null)
                 for (String f : strings) {
                     System.out.println("sending message to user:" + user.getChatId() + " AZS:" + f);
