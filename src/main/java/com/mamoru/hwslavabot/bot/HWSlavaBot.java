@@ -338,7 +338,7 @@ public class HWSlavaBot extends TelegramWebhookBot {
     public void checkFuel() throws JsonProcessingException, TelegramApiException {
 
         List<Chatter> all = userRepository.findAll();
-
+        Map<String,List<String>> fuelByCity = new HashMap<>();
         for (Chatter user : all) {
             ArrayList<String> stationsNumbers = new ArrayList<>();
             RestTemplate restTemplate = new RestTemplate();
@@ -371,8 +371,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
                     JsonNode name = tree.path("data").path("name");
                     System.out.println(name.asText());
                     if (!fuel.get(stationsNumber)) {
+                        List<String> strings = fuelByCity.get(user.getCity());
+                        if(strings == null){
+                            strings = new ArrayList<>();
+                        }
+                        strings.add(name.asText());
                         fuel.put(stationsNumber, true);
-                        execute(new SendMessage(user.getChatId(), name.asText()));
+//                        execute(new SendMessage(user.getChatId(), name.asText()));
                     }
                 } else {
                     fuel.put(stationsNumber, false);
@@ -382,7 +387,13 @@ public class HWSlavaBot extends TelegramWebhookBot {
 
             System.out.println("City check for user:"+user.getChatId()+" finished");
         }
-
+        for (Chatter user : all) {
+            List<String> strings = fuelByCity.get(user.getCity());
+            for (String f : strings) {
+                System.out.println("sending message to user:"+ user.getChatId()+ " AZS:"+ f);
+                execute(new SendMessage(user.getChatId(), f));
+            }
+        }
 
     }
 
