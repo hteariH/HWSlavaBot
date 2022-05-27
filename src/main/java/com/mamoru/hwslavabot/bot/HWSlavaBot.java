@@ -392,7 +392,11 @@ public class HWSlavaBot extends TelegramWebhookBot {
             if (strings != null)
                 for (String f : strings) {
                     System.out.println("sending message to user:" + user.getChatId() + " AZS:" + f);
-                    execute(new SendMessage(user.getChatId(), f));
+                    try{
+                        execute(new SendMessage(user.getChatId(), f));
+                    } catch (Exception e){
+
+                    }
                 }
         }
 
